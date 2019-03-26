@@ -8,7 +8,7 @@ FILE_EXISTS_ERROR = (17, 'File exists')
 
 IMG_FOLDER = 'images'
 ANNOTATION_FOLDER = 'annotations'
-DEBUG_MODE = False
+DEBUG_MODE = 'erang' in os.environ['HOME'] # TODO change
 if DEBUG_MODE:
     IMG_FOLDER += '_debug'
     ANNOTATION_FOLDER += '_debug'

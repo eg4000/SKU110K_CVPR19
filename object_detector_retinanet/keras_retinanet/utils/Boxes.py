@@ -146,7 +146,7 @@ def non_maximal_suppression(boxes, scores=None, labels=None, overlap_threshold=0
 def perform_nms_on_image_dataframe(image_data, overlap_threshold=0.5):
     number_of_images = len(image_data['image_name'].unique())
     if number_of_images > 1:
-        Log.error('nms received data including more than 1 image - cannot perform nms!')
+        print('nms received data including more than 1 image - cannot perform nms!')
     image_boxes = image_data.as_matrix(BOX_CONSTANTS)
     image_scores = numpy.array(image_data['confidence'])
 

@@ -12,7 +12,7 @@ from scipy.stats import chi2
 from object_detector_retinanet.keras_retinanet.utils.Boxes import BOX, extract_boxes_from_edge_boxes, \
     perform_nms_on_image_dataframe
 from object_detector_retinanet.keras_retinanet.utils.CollapsingMoG import collapse
-from object_detector_retinanet.utils import image_path
+from object_detector_retinanet.utils import image_path, root_dir
 
 
 class Params:
@@ -67,8 +67,7 @@ class DuplicateMerger(object):
         contours = cv2.findContours(numpy.ndarray.copy(heat_map), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         candidates = self.find_new_candidates(contours, heat_map, data, original_detection_centers, image)
-        candidates = self.map_original_boxes_to_new_boxes(candidates, original_detection_centers,
-                                                          image.shape[0:2])
+        candidates = self.map_original_boxes_to_new_boxes(candidates, original_detection_centers)
 
 
         best_detection_ids = {}
@@ -377,7 +376,7 @@ def local_res(image_name, results):
     project = result_df['project'].iloc[0]
     image_name = result_df['image_name'].iloc[0]
     if pixel_data is None:
-        pixel_data = read_image_bgr(os.path.join(image_path(),  image_name))
+        pixel_data = read_image_bgr(os.path.join(root_dir(),  image_name))
 
     filtered_data = duplicate_merger.filter_duplicate_candidates(result_df, pixel_data)
     return filtered_data

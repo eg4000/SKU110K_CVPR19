@@ -61,8 +61,7 @@ def _read_classes(csv_reader):
 
 
 def _read_images(base_dir):
-    """ Read annotations from the csv_reader.
-    """
+
     result = {}
     dirs = [os.path.join(base_dir, o) for o in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, o))]
     if len(dirs) == 0:

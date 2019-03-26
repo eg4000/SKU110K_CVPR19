@@ -106,12 +106,12 @@ def collapse(original_detection_centers, k, offset, max_iter=100, epsilon=1e-100
             d_val += alpha_ * min_dist
         delta = prev_d_val - d_val
         if delta < 0:
-            Log.error('EM bug - not monotonic- using fallback')
+            print('EM bug - not monotonic- using fallback')
             return beta_init, mu_prime_init, covariance_prime_init
-        Log.debug('Iteration {}, d_val={}, delta={}, k={}, n={}'.format(iteration, d_val, delta, k, n))
+        #Log.debug('Iteration {}, d_val={}, delta={}, k={}, n={}'.format(iteration, d_val, delta, k, n))
 
     if delta > epsilon:
-        Log.warning('EM did not converge- using fallback')
+        print('EM did not converge- using fallback')
         return beta_init, mu_prime_init, covariance_prime_init
     return beta, mu_prime, covariance_prime
 

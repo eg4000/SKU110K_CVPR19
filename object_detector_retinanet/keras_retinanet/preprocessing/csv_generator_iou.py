@@ -16,7 +16,6 @@ limitations under the License.
 """
 from object_detector_retinanet.keras_retinanet.preprocessing.generatorIou import \
     GeneratorIou
-from .generator import Generator
 from ..utils.image import read_image_bgr
 import cv2
 import numpy as np
@@ -64,7 +63,9 @@ def _read_classes(csv_reader):
 def _read_images(base_dir):
 
     result = {}
-    dirs = os.listdir(base_dir)
+    dirs = [os.path.join(base_dir, o) for o in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, o))]
+    if len(dirs) == 0:
+        dirs = ['']
     for project in dirs:
         project_imgs = os.listdir(os.path.join(base_dir, project))
         i = 0
