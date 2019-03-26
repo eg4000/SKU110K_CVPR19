@@ -75,7 +75,7 @@ def _get_detections(generator, model, score_threshold=0.05, max_detections=100, 
     all_detections = [[None for i in range(generator.num_classes())] for j in range(generator.size())]
 
     csv_data_lst = []
-    csv_data_lst.append(['probe_id', 'x1', 'y1', 'x2', 'y2', 'confidence', 'label'])
+    csv_data_lst.append(['image_id', 'x1', 'y1', 'x2', 'y2', 'confidence', 'label'])
     for i in range(generator.size()):
         image_name = os.path.join(generator.image_path(i).split(os.path.sep)[-2],
                                   generator.image_path(i).split(os.path.sep)[-1])

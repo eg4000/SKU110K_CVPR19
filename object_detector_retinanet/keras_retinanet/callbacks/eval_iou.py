@@ -22,7 +22,8 @@ class Evaluate(keras.callbacks.Callback):
     """ Evaluation callback for arbitrary datasets.
     """
 
-    def __init__(self, generator, iou_threshold=0.5, score_threshold=0.05, max_detections=100, save_path=None, tensorboard=None, verbose=1):
+    def __init__(self, generator, iou_threshold=0.5, score_threshold=0.05, max_detections=100, save_path=None,
+                 tensorboard=None, verbose=1):
         """ Evaluate a given dataset using a given model at the end of every epoch during training.
 
         # Arguments
@@ -34,17 +35,18 @@ class Evaluate(keras.callbacks.Callback):
             tensorboard     : Instance of keras.callbacks.TensorBoard used to log the mAP value.
             verbose         : Set the verbosity level, by default this is set to 1.
         """
-        self.generator       = generator
-        self.iou_threshold   = iou_threshold
+        self.generator = generator
+        self.iou_threshold = iou_threshold
         self.score_threshold = score_threshold
-        self.max_detections  = max_detections
-        self.save_path       = save_path
-        self.tensorboard     = tensorboard
-        self.verbose         = verbose
+        self.max_detections = max_detections
+        self.save_path = save_path
+        self.tensorboard = tensorboard
+        self.verbose = verbose
 
         super(Evaluate, self).__init__()
 
     def on_epoch_end(self, epoch, logs=None):
+        # TODO fix mAP formala
         logs = logs or {}
 
         # run evaluation

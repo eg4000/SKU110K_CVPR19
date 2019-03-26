@@ -1,55 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import cPickle
-import os
-from datetime import datetime
 
-import pandas
-from bson import ObjectId
 import numpy
 import cv2
+import os
 import pandas
 import scipy
+from keras_retinanet.utils.image import read_image_bgr
 from scipy.stats import chi2
 
-from Trax.Algo.Data.Recognition.Data import DataSet
-from Trax.Algo.Deep.Core.Output.Drawing.Global import CvColor
-from Trax.Algo.Deep.Core.Output.Drawing.VisualDebug import rect_color
-from Trax.Algo.Utils.Rectangles.Common import extract_boxes_from_edge_boxes
-from Trax.Algo.Utils.Rectangles.Boxes import BOX, maximum_overlap, intersection_over_union
-from IOU.SKU.CollapsingMoG import collapse
-from Trax.Utils.Logging.Logger import Log
-
-
-class Params:
-    box_size_factor = 0.3
-    min_box_size = 2
-    ellipsoid_thresh = 0.5
-
-
-from Trax.Algo.Data.Recognition.BuilderNew import Dataset
-from Trax.Algo.Deep.Core.GlobalResources import MODEL_REPO, MAPPING_REPO, MAPPING_FOLDER, CLASS_MAPPING_FILENAME
-from Trax.Algo.Deep.Core.Output.Drawing.VisualDebug import ProbeVisualizer
-
-from Trax.DB.Mongo.Connector import MongoConnector
-from Trax.Data.GlobalConstants import TrainingConstants, VotingConstants
-from Trax.Data.Orm.OrmProbeDataObjects import ProbeUtils
-from Trax.Utils.Conf.Configuration import Config
-
-from Trax.Algo.Deep.Core.Networks.Keras.Repository import CoachDatasetRepository, CoachModelRepository, \
-    CoachLabelMappingRepository
-from Trax.Algo.Recognition.EngineServices.Collectors.Calculators import DetectorStatsCalculator
-from Trax.Algo.Recognition.EngineServices.Collectors.Visualizers import DetectorVisualizer
-from Trax.Algo.Utils.DebugingEngine.Engine import AlgoDebuggersHub
-from Trax.Utils.DebuggingEngine.Engine import get_debuggers_list
-from Trax.Utils.DesignPatterns.Container import TypeContainer
-from Trax.Utils.Files.FolderServices import create_folder
-from Trax.Utils.Files.GlobalResources import global_path, global_recognition_path
-from Trax.Cloud.Services.Connector.Logger import LoggerInitializer
-from Trax.Utils.Logging.Logger import Log
-from Trax.Utils.Profiling import ProfilingDecorator
-
-__author__ = 'erang'
+from object_detector_retinanet.keras_retinanet.utils.Boxes import BOX, extract_boxes_from_edge_boxes, \
+    perform_nms_on_image_dataframe
+from object_detector_retinanet.keras_retinanet.utils.CollapsingMoG import collapse
+from object_detector_retinanet.utils import image_path
 
 
 class Params:
@@ -86,14 +49,8 @@ def aggregate_gaussians(sub_range, shape, width, height, confidence, boxes):
 class DuplicateMerger(object):
     visualizer = None
 
-    def filter_duplicate_candidates(self, data, probe_image):
-        """
+    def filter_duplicate_candidates(self, data, image):
 
-        :param data by_probe_ids_and_project:
-        :param probe_image:
-        :return: dict of cluster ids as keys and their values are dict with 2 keys:
-        {"box" (of cluster): numpy ndarray of box}, {"detection ids": list of detections ids}
-        """
         Params.box_size_factor = 0.5
         Params.min_box_size = 5
         Params.ellipsoid_thresh = 0.5
@@ -101,107 +58,20 @@ class DuplicateMerger(object):
         Params.min_k = 0
         Params.shallow = False
 
-        draw_orig = False
-        if draw_orig and self.visualizer:
-            self.draw_original_boxes(data)
-            self.visualizer.save_canvas('orig')
-
-        heat_map = numpy.zeros(shape=[probe_image.shape[0], probe_image.shape[1], 1], dtype=numpy.float64)
+        heat_map = numpy.zeros(shape=[image.shape[0], image.shape[1], 1], dtype=numpy.float64)
         original_detection_centers = self.shrink_boxes(data, heat_map)
 
-        # Debug
-        if self.visualizer:
-            self.visualizer.save_canvas('orig')
-            self.visualizer.save_canvas('img')
         cv2.normalize(heat_map, heat_map, 0, 255, cv2.NORM_MINMAX)
         heat_map = cv2.convertScaleAbs(heat_map)
         h2, heat_map = cv2.threshold(heat_map, 4, 255, cv2.THRESH_TOZERO)
-
-        # contours = cv2.findContours(numpy.ndarray.copy(heat_map), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        if self.visualizer:
-            color_map = self.visualizer.get_color_map(heat_map)
-            color_map[heat_map == 0] = self.visualizer.probe_image[heat_map == 0]
-            blend = cv2.addWeighted(color_map, 0.6, self.visualizer.probe_image, 0.4, 0)
-            self.visualizer.save_image(blend, 'heatmap')
-        # heat_map_new = numpy.zeros_like(heat_map)
-        # for i, contour in enumerate(contours[1]):
-        #     contour_bounding_rect = cv2.boundingRect(contour)
-        #     contour_bbox = extract_boxes_from_edge_boxes(numpy.array(contour_bounding_rect))[0]
-        #     sub_heat_map = heat_map[contour_bbox[BOX.Y1]:contour_bbox[BOX.Y2],
-        #                    contour_bbox[BOX.X1]:contour_bbox[BOX.X2]]
-        #     sub_heat_map = cv2.normalize(sub_heat_map, None, 0, 255, cv2.NORM_MINMAX)
-        #     sub_heat_map = cv2.convertScaleAbs(sub_heat_map)
-        #     heat_map_new[contour_bbox[BOX.Y1]:contour_bbox[BOX.Y2],
-        #     contour_bbox[BOX.X1]:contour_bbox[BOX.X2]] = sub_heat_map
-        #
-        # heat_map = heat_map_new
-        # # Debug
-        # if self.visualizer:
-        #     color_map = self.visualizer.get_color_map(heat_map)
-        #     color_map[heat_map == 0] = self.visualizer.probe_image[heat_map == 0]
-        #     blend = cv2.addWeighted(color_map, 0.6, self.visualizer.probe_image, 0.4, 0)
-        #     self.visualizer.save_image(blend, 'heatmap')
-
-        # cv2.normalize(heat_map, heat_map, 0, 255, cv2.NORM_MINMAX)
-        # heat_map = cv2.convertScaleAbs(heat_map)
-        # if Params.shallow:
-        #     heat_map_float = heat_map / (heat_map.max() / 16.)
-        #     heat_map_float = numpy.power(heat_map_float, 2)
-        #     heat_map_int = cv2.normalize(heat_map_float, None, 0, 255, cv2.NORM_MINMAX)
-        #     heat_map_int = cv2.convertScaleAbs(heat_map_int)
-        #     heat_map = heat_map_int
         contours = cv2.findContours(numpy.ndarray.copy(heat_map), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        if self.visualizer:
-            color_map = self.visualizer.get_color_map(heat_map)
-            color_map[heat_map == 0] = self.visualizer.probe_image[heat_map == 0]
-            blend = cv2.addWeighted(color_map, 0.6, self.visualizer.probe_image, 0.4, 0)
-            self.visualizer.save_image(blend, 'heatmap')
-            self.visualizer.drawContours('contours', contours[1], -1, (0, 255, 0), 3)
-            self.visualizer.save_canvas('contours')
 
-        candidates = self.find_new_candidates(contours, heat_map, data, original_detection_centers, probe_image)
+        candidates = self.find_new_candidates(contours, heat_map, data, original_detection_centers, image)
         candidates = self.map_original_boxes_to_new_boxes(candidates, original_detection_centers,
-                                                          probe_image.shape[0:2])
+                                                          image.shape[0:2])
 
-        if self.visualizer:
-            bounding_boxes = numpy.ndarray([len(candidates), 4])
-            max_confidences = numpy.ndarray([len(candidates)])
-            for i, candidate in candidates.iteritems():
-
-                label = candidate['original_detection_ids']
-                self.visualizer.draw_labeled_box('sub_contour_rects2', candidate['box'],
-                                                 label='{}'.format(len(label)),
-                                                 rect_color=rect_color(i))
-                max_confidence = 0
-                min_x1 = heat_map.shape[1]
-                min_y1 = heat_map.shape[0]
-                max_x2 = 0
-                max_y2 = 0
-
-                for detection_id in label:
-                    detection = data.ix[detection_id]
-                    confidence = detection['confidence']
-                    if confidence > max_confidence:
-                        max_confidence = confidence
-                    if detection['x1'] < min_x1:
-                        min_x1 = detection['x1']
-                    if detection['y1'] < min_y1:
-                        min_y1 = detection['y1']
-                    if detection['x2'] > max_x2:
-                        max_x2 = detection['x2']
-                    if detection['y2'] > max_y2:
-                        max_y2 = detection['y2']
-
-                bounding_box = numpy.asarray([min_x1, min_y1, max_x2, max_y2])
-                bounding_boxes[i] = bounding_box
-                max_confidences[i] = max_confidence
-                self.visualizer.draw_labeled_box('bounding_boxes', bounding_box,
-                                                 label='{}'.format(i),
-                                                 rect_color=rect_color(i))
 
         best_detection_ids = {}
-        if self.visualizer:
-            probe_id = 'final_' + self.visualizer.visual_folder.split('/')[-1][:-4]
         filtered_data = pandas.DataFrame(columns=data.columns)
         for i, candidate in candidates.iteritems():
             label = candidate['original_detection_ids']
@@ -229,36 +99,13 @@ class DuplicateMerger(object):
                 best_detection['y2'] = med_y + med_h / 2
             best_detection_ids[best_detection_id] = best_detection
             filtered_data = filtered_data.append(best_detection)
-            if self.visualizer:
-                for detection_id in label:
-                    detection = data.ix[detection_id]
-                    confidence = detection['confidence']
-                    box = numpy.asarray([detection['x1'], detection['y1'], detection['x2'], detection['y2']])
-                    self.visualizer.draw_labeled_box('sub_contour_rects3', box,
-                                                     label='{0:.2f}'.format(confidence), rect_color=rect_color(i),
-                                                     scale=1)
-                for row_index, detection in filtered_data.iterrows():
-                    confidence = detection['confidence']
-                    box = numpy.asarray([detection['x1'], detection['y1'], detection['x2'], detection['y2']])
-                    self.visualizer.draw_labeled_box('sub_contour_rects4', box,
-                                                     label='{0:.2f}'.format(confidence),
-                                                     rect_color=rect_color(i), scale=1)
-        # to handle overlap between contour bboxes
-        filtered_data = DataSet.perform_nms_on_probe_dataframe(filtered_data, maximum_overlap, 0.3)
 
-        if self.visualizer:
-            for ind, detection in filtered_data.iterrows():
-                box = numpy.asarray([detection['x1'], detection['y1'], detection['x2'], detection['y2']])
-                self.visualizer.draw_labeled_box(probe_id, box, label='{0:.2f}'.format(detection.confidence), scale=1)
-            self.visualizer.save_canvas('sub_contour_rects1')
-            self.visualizer.save_canvas('sub_contour_rects2')
-            self.visualizer.save_canvas('bounding_boxes')
-            self.visualizer.save_canvas('sub_contour_rects3')
-            self.visualizer.save_canvas('sub_contour_rects4')
-            self.visualizer.save_canvas(probe_id)
+        # to handle overlap between contour bboxes
+        filtered_data = perform_nms_on_image_dataframe(filtered_data, 0.3)
+
         return filtered_data
 
-    def find_new_candidates(self, contours, heat_map, data, original_detection_centers, probe_image):
+    def find_new_candidates(self, contours, heat_map, data, original_detection_centers, image):
         candidates = []
         for contour_i, contour in enumerate(contours[1]):
             contour_bounding_rect = cv2.boundingRect(contour)
@@ -294,7 +141,7 @@ class DuplicateMerger(object):
                         print n, k, ' k<=Params.min_k or EM failed'
                         self.perform_nms(candidates, contour_i, curr_data)
                     else:  # successful EM
-                        cov, mu, num, roi = self.remove_redundant(contour_bbox, cov, k, mu, probe_image, sub_heat_map)
+                        cov, mu, num, roi = self.remove_redundant(contour_bbox, cov, k, mu, image, sub_heat_map)
                         self.set_candidates(candidates, cov, heat_map, mu, num, offset, roi, sub_heat_map)
                 elif (k == n):
                     pass
@@ -311,8 +158,7 @@ class DuplicateMerger(object):
             _y1 = int(round(max(0, _y - 2 * sigmay)))
             _x2 = int(round(min(sub_heat_map.shape[1], _x + 2 * sigmax)))
             _y2 = int(round(min(sub_heat_map.shape[0], _y + 2 * sigmay)))
-            if self.visualizer:
-                cv2.rectangle(roi, (_x1, _y1), (_x2, _y2), CvColor.ORANGE, thickness=3)
+
             local_box = [_x1, _y1, _x2, _y2]
             abs_box = numpy.array(self.local_box_offset(offset, local_box))
             box_width = abs_box[BOX.X2] - abs_box[BOX.X1]
@@ -321,17 +167,11 @@ class DuplicateMerger(object):
                 candidates.append({'box': abs_box, 'original_detection_ids': [],
                                    'score': heat_map[abs_box[BOX.Y1]:abs_box[BOX.Y2],
                                             abs_box[BOX.X1]:abs_box[BOX.X2]].max()})
-        if self.visualizer:
-            color_map = self.visualizer.get_color_map(sub_heat_map)
-            color_map[sub_heat_map == 0] = roi[sub_heat_map == 0]
-            blend = cv2.addWeighted(color_map, 0.2, roi, 0.8, 0)
-            self.visualizer.save_image(blend, 'left-k={}'.format(num))
 
-    def remove_redundant(self, contour_bbox, cov, k, mu, probe_image, sub_heat_map):
+    def remove_redundant(self, contour_bbox, cov, k, mu, image, sub_heat_map):
         mu = mu.round().astype(numpy.int32)
-        if self.visualizer:
-            probe_image = self.visualizer.probe_image
-        roi = probe_image[contour_bbox[BOX.Y1]:contour_bbox[BOX.Y2],
+
+        roi = image[contour_bbox[BOX.Y1]:contour_bbox[BOX.Y2],
               contour_bbox[BOX.X1]:contour_bbox[BOX.X2]].copy()
         cnts = []
         for source_i, ((_x, _y), c) in enumerate(zip(mu, cov)):
@@ -355,15 +195,7 @@ class DuplicateMerger(object):
             ellipse_mask = cv2.fillPoly(local_m, [poly], (1, 1, 1))
             contours = cv2.findContours(ellipse_mask.copy(), cv2.RETR_EXTERNAL,
                                         cv2.CHAIN_APPROX_SIMPLE)
-            if self.visualizer:
-                cv2.drawContours(roi, contours[1], -1, CvColor.BLUE, 1)
             cnts.append(contours[1][0])
-            if self.visualizer:
-                _x1 = int(round(max(0, _x - 2 * sigmax)))
-                _y1 = int(round(max(0, _y - 2 * sigmay)))
-                _x2 = int(round(min(sub_heat_map.shape[1], _x + 2 * sigmax)))
-                _y2 = int(round(min(sub_heat_map.shape[0], _y + 2 * sigmay)))
-                cv2.rectangle(roi, (_x1, _y1), (_x2, _y2), CvColor.GRAY, thickness=2)
         center_points = mu.copy()
         distances = scipy.spatial.distance.cdist(center_points, center_points)
         scaled_distances = numpy.ndarray(shape=[k, k], dtype=numpy.float64)
@@ -407,28 +239,21 @@ class DuplicateMerger(object):
             mask = numpy.zeros(mu.shape[0])
             mask[to_remove] = 1
             mask = mask.astype(numpy.bool)
-            if self.visualizer:
-                for pt in mu[mask]:
-                    cv2.circle(roi, (pt[0], pt[1]), 2, CvColor.GRAY)
             mu = mu[~mask]
             cov = cov[~mask]
-        if self.visualizer:
-            for pt in mu:
-                cv2.circle(roi, (pt[0], pt[1]), radius=2, color=CvColor.GREEN)
         num = mu.shape[0]
         return cov, mu, num, roi
 
     def perform_nms(self, candidates, contour_i, curr_data):
-        nms_data = DataSet.perform_nms_on_probe_dataframe(curr_data, maximum_overlap, 0.3)
+
+        nms_data = perform_nms_on_image_dataframe(curr_data, 0.3)
+
         for sub_ind, row in nms_data.iterrows():
             curr_box = numpy.asarray([row['x1'], row['y1'], row['x2'], row['y2']])
             box_width = curr_box[BOX.X2] - curr_box[BOX.X1]
             box_height = curr_box[BOX.Y2] - curr_box[BOX.Y1]
             if box_width > Params.min_box_size and box_height > Params.min_box_size:
                 candidates.append({'box': curr_box, 'original_detection_ids': []})
-                if self.visualizer:
-                    self.visualizer.draw_labeled_box('sub_contour_rects1', curr_box,
-                                                     rect_color=CvColor.GREEN, label=contour_i)
 
     def get_contour_indexes(self, contour, contour_bbox, x, y):
         original_indexes = (contour_bbox[BOX.X1] <= x) & (x <= contour_bbox[BOX.X2]) & (
@@ -443,14 +268,6 @@ class DuplicateMerger(object):
         box_offset[BOX.Y2] = box[BOX.Y2] + offset[1]
         return box_offset
 
-    def draw_original_boxes(self, data):
-
-        for ind, row in data.iterrows():
-            box = numpy.asarray([row['x1'], row['y1'], row['x2'], row['y2']])
-
-            if self.visualizer:
-                self.visualizer.draw_labeled_box('orig', box, rect_color=CvColor.GREEN,
-                                                 label=ind)
 
     def shrink_boxes(self, data, heat_map):
         x1 = data['x1']
@@ -515,7 +332,7 @@ class DuplicateMerger(object):
             heat_map += numpy.expand_dims(cv2.resize(small_heat_map, (orig_shape[1], orig_shape[0])), axis=2)
         return original_detection_centers
 
-    def map_original_boxes_to_new_boxes(self, candidates, original_detection_centers, probe_dims):
+    def map_original_boxes_to_new_boxes(self, candidates, original_detection_centers):
         x = original_detection_centers['x']
         y = original_detection_centers['y']
         matched_indexes = numpy.ndarray(shape=original_detection_centers.shape[0], dtype=numpy.bool)
@@ -538,8 +355,6 @@ class DuplicateMerger(object):
 
 
 def local_res(image_name, results):
-    LoggerInitializer.init('EmMergerRetinanet')
-
     project = 'SKU_dataset'
     result_df = pandas.DataFrame()
     result_df['x1'] = results[:, 0].astype(int)
@@ -551,7 +366,7 @@ def local_res(image_name, results):
     result_df['uuid'] = 'object_label'
     result_df['label_type'] = 'object_label'
     result_df['project'] = project
-    result_df['probe_id'] = image_name
+    result_df['image_name'] = image_name
 
     result_df.reset_index()
     result_df['id'] = result_df.index
@@ -560,24 +375,13 @@ def local_res(image_name, results):
     duplicate_merger.multiprocess = False
     duplicate_merger.compression_factor = 1
     project = result_df['project'].iloc[0]
-    probe_id = result_df['probe_id'].iloc[0]
+    image_name = result_df['image_name'].iloc[0]
     if pixel_data is None:
-        # Does not support rectification
-        if '.' in str(probe_id):
-            probe_id = probe_id.split('.')[0]
-        pixel_data = ProbeUtils.getImage(project, probe_id)
-
-    # base_visual_path = os.path.join(global_path(), 'visualizer', 'detector', str(project), str(probe_id))
-    # vis = ProbeVisualizer(str(project), pixel_data, base_visual_path, delete=False)
-    # duplicate_merger.visualizer = vis
-    # duplicate_merger.visualizer2 = vis
+        pixel_data = read_image_bgr(os.path.join(image_path(),  image_name))
 
     filtered_data = duplicate_merger.filter_duplicate_candidates(result_df, pixel_data)
     return filtered_data
 
 
 if __name__ == '__main__':
-    LoggerInitializer.init('IOU')
-    AlgoDebuggersHub(get_debuggers_list(Config.confDict))
     local_res()
-    # ProfilingDecorator.do_profiling(local_res)

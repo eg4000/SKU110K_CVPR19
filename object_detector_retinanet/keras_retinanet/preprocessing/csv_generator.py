@@ -93,7 +93,7 @@ def _read_images(base_dir):
     return result
 
 
-def _read_annotations(csv_reader, classes, base_dir, image_existance):
+def _read_annotations(csv_reader, classes, base_dir, image_existence):
     """ Read annotations from the csv_reader.
     """
     result = {}
@@ -111,7 +111,7 @@ def _read_annotations(csv_reader, classes, base_dir, image_existance):
             # Append root path
             img_file = os.path.join(base_dir, img_file)
             # Check images exists
-            if img_file not in image_existance:
+            if img_file not in image_existence:
                 print("Warning: Image file {} is not existing".format(img_file))
                 continue
 
@@ -198,13 +198,13 @@ class CSVGenerator(Generator):
             self.labels[value] = key
 
         # build mappings for existence
-        self.image_existance = _read_images(self.base_dir)
+        self.image_existence = _read_images(self.base_dir)
 
         # csv with img_path, x1, y1, x2, y2, class_name
         try:
             with _open_for_csv(csv_data_file) as file:
                 self.image_data = _read_annotations(csv.reader(file, delimiter=','), self.classes, self.base_dir,
-                                                    self.image_existance)
+                                                    self.image_existence)
         except ValueError as e:
             raise_from(ValueError('invalid CSV annotations file: {}: {}'.format(csv_data_file, e)), None)
         self.image_names = list(self.image_data.keys())
@@ -240,7 +240,7 @@ class CSVGenerator(Generator):
         """ Compute the aspect ratio for an image with image_index.
         """
 
-        image = self.image_existance.get(self.image_path(image_index), None)
+        image = self.image_existence.get(self.image_path(image_index), None)
         if image is None:
             print("Error: Image path {} is not existed".format(self.image_path(image_index)))
 

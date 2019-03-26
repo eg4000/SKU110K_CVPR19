@@ -24,19 +24,13 @@ import keras
 import numpy
 import tensorflow as tf
 
-# # Allow relative imports when being executed as script.
-# if __name__ == "__main__" and __package__ is None:
-#     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
-#     import keras_retinanet.bin  # noqa: F401
-#     __package__ = "keras_retinanet.bin"
 
-# Change these to absolute imports if you copy this script outside the keras_retinanet package.
 from object_detector_retinanet.keras_retinanet import models
 from object_detector_retinanet.keras_retinanet.preprocessing.csv_generator import CSVGenerator
 from object_detector_retinanet.keras_retinanet.preprocessing.pascal_voc import PascalVocGenerator
 from object_detector_retinanet.keras_retinanet.utils.eval_iou import evaluate
 from object_detector_retinanet.keras_retinanet.utils.keras_version import check_keras_version
-from object_detector_retinanet.utils import image_path, annotation_path
+from object_detector_retinanet.utils import image_path, annotation_path, root_dir
 
 
 def get_session():
@@ -103,7 +97,7 @@ def parse_args(args):
                             default=args_annotations)
     csv_parser.add_argument('--classes', help='Path to a CSV file containing class label mapping.',
                             default=args_classes)
-    parser.add_argument('--force_hard_score', help='ablation', default=False)
+    parser.add_argument('--force_hard_score', help='', default=False)
 
     parser.add_argument('model', help='Path to RetinaNet model.')
     parser.add_argument('--base_dir', help='Path to base dir for CSV file.',
@@ -165,7 +159,7 @@ def main(args=None):
 
     # load the model
     print('Loading model, this may take a second...')
-    model = models.load_model(args.model, backbone_name=args.backbone, convert=args.convert_model)
+    model = models.load_model(os.path.join(root_dir(), args.model), backbone_name=args.backbone, convert=args.convert_model, nms=False)
 
     # print model summary
     # print(model.summary())
@@ -182,7 +176,7 @@ def main(args=None):
             score_threshold=args.score_threshold,
             max_detections=numpy.int32(999999), # args.max_detections,
             save_path=args.save_path,
-            save_detections=True,
+            save_detections=False,
             force_hard_score=force_hard_score
         )
 

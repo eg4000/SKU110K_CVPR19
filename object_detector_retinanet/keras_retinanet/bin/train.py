@@ -445,7 +445,6 @@ def parse_args(args):
 
 
 def main(args=None):
-
     # parse arguments
     if args is None:
         args = sys.argv[1:]
@@ -466,7 +465,7 @@ def main(args=None):
     use_cpu = False
 
     if args.gpu:
-       gpu_num= args.gpu
+        gpu_num = args.gpu
     else:
         gpu_num = str(0)
 

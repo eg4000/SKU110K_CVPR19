@@ -40,26 +40,16 @@ from object_detector_retinanet.keras_retinanet import losses
 from object_detector_retinanet.keras_retinanet import models
 from object_detector_retinanet.keras_retinanet.callbacks import RedirectModel
 from object_detector_retinanet.keras_retinanet.callbacks.eval_iou import Evaluate
-from object_detector_retinanet.keras_retinanet.layers.retinanet_iou_layer import \
-    retinanet_iou
-from object_detector_retinanet.keras_retinanet.models.retinanet import retinanet_bbox, \
-    AnchorParameters, retinanet, __build_anchors, iou_submodels
-from object_detector_retinanet.keras_retinanet.preprocessing.csv_generator import \
-    CSVGenerator
-from object_detector_retinanet.keras_retinanet.preprocessing.csv_generator_iou import \
-    CSVIouGenerator
+from object_detector_retinanet.keras_retinanet.layers.retinanet_iou_layer import retinanet_iou
+from object_detector_retinanet.keras_retinanet.models.retinanet import retinanet_bbox, AnchorParameters, iou_submodels
+from object_detector_retinanet.keras_retinanet.preprocessing.csv_generator_iou import CSVIouGenerator
 from object_detector_retinanet.keras_retinanet.preprocessing.kitti import KittiGenerator
-from object_detector_retinanet.keras_retinanet.preprocessing.open_images import \
-    OpenImagesGenerator
-from object_detector_retinanet.keras_retinanet.preprocessing.pascal_voc import \
-    PascalVocGenerator
-from object_detector_retinanet.keras_retinanet.utils.anchors import make_shapes_callback, \
-    anchor_targets_bbox
-from object_detector_retinanet.keras_retinanet.utils.keras_version import \
-    check_keras_version
+from object_detector_retinanet.keras_retinanet.preprocessing.open_images import OpenImagesGenerator
+from object_detector_retinanet.keras_retinanet.preprocessing.pascal_voc import PascalVocGenerator
+from object_detector_retinanet.keras_retinanet.utils.anchors import make_shapes_callback, anchor_targets_bbox
+from object_detector_retinanet.keras_retinanet.utils.keras_version import check_keras_version
 from object_detector_retinanet.keras_retinanet.utils.model import freeze as freeze_model
-from object_detector_retinanet.keras_retinanet.utils.transform import \
-    random_transform_generator
+from object_detector_retinanet.keras_retinanet.utils.transform import random_transform_generator
 
 from object_detector_retinanet.utils import create_folder, image_path, annotation_path, root_dir, DEBUG_MODE
 
@@ -506,7 +496,7 @@ def main(args=None):
         training_model = model
         prediction_model = retinanet_bbox(model=model)
     else:
-        weights = os.path.join(os.getenv("HOME"), 'retinanet', args.weights)
+        weights = os.path.join(os.path.join(root_dir(), args.weights))
         # default to imagenet if nothing else is specified
         if weights is None and args.imagenet_weights:
             weights = backbone.download_imagenet()
