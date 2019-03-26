@@ -22,7 +22,7 @@ class Evaluate(keras.callbacks.Callback):
     """ Evaluation callback for arbitrary datasets.
     """
 
-    def __init__(self, generator, iou_threshold=0.5, score_threshold=0.05, max_detections=100, save_path=None, tensorboard=None, verbose=1):
+    def __init__(self, generator, iou_threshold=0.5, score_threshold=0.05, max_detections=300, save_path=None, tensorboard=None, verbose=1):
         """ Evaluate a given dataset using a given model at the end of every epoch during training.
 
         # Arguments

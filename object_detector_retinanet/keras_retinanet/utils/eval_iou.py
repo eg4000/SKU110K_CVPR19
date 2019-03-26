@@ -61,7 +61,7 @@ def _compute_ap(recall, precision):
     return ap
 
 
-def _get_detections(generator, model, score_threshold=0.1, max_detections=100, save_path=None, save_detections=False, force_hard_score=False):
+def _get_detections(generator, model, score_threshold=0.1, max_detections=300, save_path=None, save_detections=False, force_hard_score=False):
     """ Get the detections from the model using the generator.
 
     The result is a list of lists such that the size is:
@@ -182,7 +182,7 @@ def evaluate(
         model,
         iou_threshold=0.5,
         score_threshold=0.05,
-        max_detections=100,
+        max_detections=300,
         save_path=None,
         save_detections=False,
         force_hard_score=False

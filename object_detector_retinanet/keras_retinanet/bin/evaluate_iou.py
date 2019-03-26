@@ -113,7 +113,6 @@ def parse_args(args):
                         default=0.1, type=float)
     parser.add_argument('--iou-threshold', help='IoU Threshold to count for a positive detection (defaults to 0.5).',
                         default=0.75, type=float)
-    parser.add_argument('--max-detections', help='Max Detections per image (defaults to 100).', default=1000000, type=int)
     parser.add_argument('--save-path', help='Path for saving images with detections (doesn\'t work for COCO).')
     parser.add_argument('--image-min-side', help='Rescale the image so the smallest side is min_side.', type=int,
                         default=800)
@@ -174,7 +173,7 @@ def main(args=None):
             model,
             iou_threshold=args.iou_threshold,
             score_threshold=args.score_threshold,
-            max_detections=numpy.int32(999999), # args.max_detections,
+            max_detections=numpy.int32(999999),
             save_path=args.save_path,
             save_detections=False,
             force_hard_score=force_hard_score
