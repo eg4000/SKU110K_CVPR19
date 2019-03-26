@@ -32,7 +32,7 @@ from object_detector_retinanet.keras_retinanet.preprocessing.pascal_voc import \
 from object_detector_retinanet.keras_retinanet.utils.eval import evaluate
 from object_detector_retinanet.keras_retinanet.utils.keras_version import \
     check_keras_version
-from object_detector_retinanet.utils import image_path, annotation_path
+from object_detector_retinanet.utils import image_path, annotation_path, root_dir
 
 
 def get_session():
@@ -131,8 +131,17 @@ def main(args=None):
     check_keras_version()
 
     # optionally choose specific GPU
+    use_cpu = False
+
     if args.gpu:
-        os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+        gpu_num = args.gpu
+    else:
+        gpu_num = str(0)
+
+    if use_cpu:
+        os.environ["CUDA_VISIBLE_DEVICES"] = str(666)
+    else:
+        os.environ["CUDA_VISIBLE_DEVICES"] = gpu_num
     keras.backend.tensorflow_backend.set_session(get_session())
 
     # make save path if it doesn't exist
@@ -144,7 +153,9 @@ def main(args=None):
 
     # load the model
     print('Loading model, this may take a second...')
-    model = models.load_model(args.model, backbone_name=args.backbone, convert=args.convert_model)
+
+    model = models.load_model(os.path.join(root_dir(), args.model), backbone_name=args.backbone,
+                              convert=args.convert_model, nms=True)
 
     # print model summary
     # print(model.summary())
@@ -160,8 +171,8 @@ def main(args=None):
             model,
             iou_threshold=args.iou_threshold,
             score_threshold=args.score_threshold,
-            max_detections=numpy.int32(999999),  # args.max_detections,
-            save_path=args.save_path,
+            max_detections=300,  # numpy.int32(999999),  # args.max_detections,
+            save_path=None,  # os.path.join(root_dir(), 'res_images'),#args.save_path,
             save_detections=True
         )
 

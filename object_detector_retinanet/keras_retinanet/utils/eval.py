@@ -18,6 +18,7 @@ from __future__ import print_function
 
 import csv
 
+from object_detector_retinanet.utils import root_dir
 from .anchors import compute_overlap
 from .visualization import draw_detections, draw_annotations
 
@@ -77,7 +78,7 @@ def _get_detections(generator, model, score_threshold=0.05, max_detections=100, 
     csv_data_lst.append(['probe_id', 'x1', 'y1', 'x2', 'y2', 'confidence', 'label'])
     for i in range(generator.size()):
         image_name = os.path.join(generator.image_path(i).split(os.path.sep)[-2],
-                                    generator.image_path(i).split(os.path.sep)[-1])
+                                  generator.image_path(i).split(os.path.sep)[-1])
         raw_image = generator.load_image(i)
         image = generator.preprocess_image(raw_image.copy())
         image, scale = generator.resize_image(image)
@@ -90,8 +91,8 @@ def _get_detections(generator, model, score_threshold=0.05, max_detections=100, 
 
         # select indices which have a score above the threshold
         indices = np.where(scores[0, :] > score_threshold)[0]
-        print (image_name)
-        print (np.histogram(scores))
+        print(image_name)
+        print(np.histogram(scores))
         # select those scores
         scores = scores[0][indices]
 
@@ -133,9 +134,7 @@ def _get_detections(generator, model, score_threshold=0.05, max_detections=100, 
 
     if save_detections:
         # Save annotations csv file
-        with open(
-                "/media/erang/SAMSUNG/iou presentation data/roeis/mine_retinanet/object_detector_retinanet/snapshot/Tue_Oct_16_22:16:04_2018/detections_output.csv",
-                'wb') as fl_csv:
+        with open(os.path.join(root_dir(), "detections_output.csv"), 'wb') as fl_csv:
             writer = csv.writer(fl_csv)
             writer.writerows(csv_data_lst)
         print("Saved output.csv file")
