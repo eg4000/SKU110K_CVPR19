@@ -120,18 +120,25 @@ def _get_detections(generator, model, score_threshold=0.1, max_detections=300, s
             [image_boxes, np.expand_dims(image_scores, axis=1), np.expand_dims(image_hard_scores, axis=1),
              np.expand_dims(image_labels, axis=1)], axis=1)
         filtered_data = EmMerger.local_res(image_name, results)
-
+        filtered_boxes = []
+        filtered_scores = []
+        filtered_labels = []
         # Stats detections
         if save_detections:
             for ind, detection in filtered_data.iterrows():
                 box = np.asarray([detection['x1'], detection['y1'], detection['x2'], detection['y2']])
+                filtered_boxes.append(box)
+                filtered_scores.append(detection['confidence'])
+                filtered_labels.append('{0:.2f}'.format(detection['hard_score']))
                 row = [image_name, detection['x1'], detection['y1'], detection['x2'], detection['y2'],
                        detection['confidence'], detection['hard_score']]
                 csv_data_lst.append(row)
 
         if save_path is not None:
-            draw_annotations(raw_image, generator.load_annotations(i), label_to_name=generator.label_to_name)
-            draw_detections(raw_image, image_boxes, image_scores, image_labels, label_to_name=generator.label_to_name)
+            create_folder(save_path)
+
+            # draw_annotations(raw_image, generator.load_annotations(i), label_to_name=generator.label_to_name)
+            draw_detections(raw_image, np.asarray(filtered_boxes), np.asarray(filtered_scores), np.asarray(filtered_labels), color=(0, 0, 255))
 
             cv2.imwrite(os.path.join(save_path, '{}.png'.format(i)), raw_image)
 

@@ -174,8 +174,8 @@ def main(args=None):
             iou_threshold=args.iou_threshold,
             score_threshold=args.score_threshold,
             max_detections=numpy.int32(999999),
-            save_path=args.save_path,
-            save_detections=False,
+            save_path=None,  # os.path.join(root_dir(), 'res_images_iou'),#args.save_path,
+            save_detections=True,
             force_hard_score=force_hard_score
         )
 

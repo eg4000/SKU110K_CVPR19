@@ -18,7 +18,7 @@ from __future__ import print_function
 
 import csv
 
-from object_detector_retinanet.utils import root_dir
+from object_detector_retinanet.utils import root_dir, create_folder
 from .anchors import compute_overlap
 from .visualization import draw_detections, draw_annotations
 
@@ -121,7 +121,8 @@ def _get_detections(generator, model, score_threshold=0.05, max_detections=300, 
                 csv_data_lst.append(row)
 
         if save_path is not None:
-            draw_annotations(raw_image, generator.load_annotations(i), label_to_name=generator.label_to_name)
+            create_folder(save_path)
+            # draw_annotations(raw_image, generator.load_annotations(i), label_to_name=generator.label_to_name)
             draw_detections(raw_image, image_boxes, image_scores, image_labels, label_to_name=generator.label_to_name)
 
             cv2.imwrite(os.path.join(save_path, '{}.png'.format(i)), raw_image)
