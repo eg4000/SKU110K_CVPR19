@@ -1,4 +1,4 @@
-This is an internal code repo for us. Not the paper web page
+This is *NOT* the paper web page but just an internal code repo for us. 
 
 
 # SKU110K
