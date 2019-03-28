@@ -14,7 +14,7 @@ Add few results from the paper
 <img src="qualitive_results.png" width="750">
 
 ## Citation
-Please cite our git repo if you use this code in your own work (*to be changed to our paper*):
+Please cite our git repo if you use this code in your own work (*to be changed to our repo*):
 
 ```
 @misc{herzig_relation_maskrcnn,
