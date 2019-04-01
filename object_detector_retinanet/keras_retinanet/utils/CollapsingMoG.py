@@ -1,9 +1,29 @@
 import math
-from distutils.log import Log
 
 import scipy
 import numpy
 
+import signal
+import time
+
+class Timeout():
+    """Timeout class using ALARM signal."""
+
+    class Timeout(Exception):
+        pass
+
+    def __init__(self, sec):
+        self.sec = sec
+
+    def __enter__(self):
+        signal.signal(signal.SIGALRM, self.raise_timeout)
+        signal.setitimer(signal.ITIMER_REAL, self.sec)
+
+    def __exit__(self, *args):
+        signal.alarm(0)  # disable alarm
+
+    def raise_timeout(self, *args):
+        raise Timeout.Timeout()
 
 
 def agglomerative_init(alpha, mu, covariance, n, k):
@@ -74,45 +94,55 @@ def gaussian_kl_diag(mu1, cov1, mu2, cov2):
 
 
 def collapse(original_detection_centers, k, offset, max_iter=100, epsilon=1e-100):
-    n = original_detection_centers.shape[0]
-    mu_x = original_detection_centers.x - offset[0]
-    mu_y = original_detection_centers.y - offset[1]
-    sigma_xx = original_detection_centers.sigma_x * original_detection_centers.sigma_x
-    sigma_yy = original_detection_centers.sigma_y * original_detection_centers.sigma_y
+    try:
+        with Timeout(3):
+            n = original_detection_centers.shape[0]
+            mu_x = original_detection_centers.x - offset[0]
+            mu_y = original_detection_centers.y - offset[1]
+            sigma_xx = original_detection_centers.sigma_x * original_detection_centers.sigma_x
+            sigma_yy = original_detection_centers.sigma_y * original_detection_centers.sigma_y
 
-    alpha = numpy.array(original_detection_centers.confidence / original_detection_centers.confidence.sum())
-    mu = numpy.array([mu_x.values, mu_y.values]).transpose()
-    covariance = numpy.array([[sigma_xx.values, sigma_xx.values * 0], [0 * sigma_yy.values, sigma_yy.values]]).transpose()
+            alpha = numpy.array(original_detection_centers.confidence / original_detection_centers.confidence.sum())
+            mu = numpy.array([mu_x.values, mu_y.values]).transpose()
+            covariance = numpy.array([[sigma_xx.values, sigma_xx.values * 0], [0 * sigma_yy.values, sigma_yy.values]]).transpose()
 
-    beta, mu_prime, covariance_prime = agglomerative_init(alpha.copy(), mu.copy(), covariance.copy(), n, k)
+            beta, mu_prime, covariance_prime = agglomerative_init(alpha.copy(), mu.copy(), covariance.copy(), n, k)
+    except Timeout.Timeout:
+        print "agglomerative_init Timeout - using fallback"
+        return None, None, None
 
-    beta_init = beta.copy()
-    mu_prime_init = mu_prime.copy()
-    covariance_prime_init = covariance_prime.copy()
-    iteration = 0
-    d_val = float('inf')
-    delta = float('inf')
-    min_kl_cache = {}
-    while delta > epsilon and iteration < max_iter:
-        iteration += 1
-        clusters, clusters_inv = e_step(alpha, beta, covariance, covariance_prime, mu, mu_prime, min_kl_cache)
-        m_step(alpha, beta, clusters, covariance, covariance_prime, mu, mu_prime)
+    try:
+        with Timeout(10):
 
-        prev_d_val = d_val
-        d_val = 0
-        for t, (alpha_, mu_, cov_) in enumerate(zip(alpha, mu, covariance)):
-            min_dist, selected_cluster = min_kl(beta, cov_, covariance_prime, mu_, mu_prime)
-            min_kl_cache[t] = (min_dist, selected_cluster)
-            d_val += alpha_ * min_dist
-        delta = prev_d_val - d_val
-        if delta < 0:
-            print('EM bug - not monotonic- using fallback')
-            return beta_init, mu_prime_init, covariance_prime_init
-        #Log.debug('Iteration {}, d_val={}, delta={}, k={}, n={}'.format(iteration, d_val, delta, k, n))
+            beta_init = beta.copy()
+            mu_prime_init = mu_prime.copy()
+            covariance_prime_init = covariance_prime.copy()
+            iteration = 0
+            d_val = float('inf')
+            delta = float('inf')
+            min_kl_cache = {}
+            while delta > epsilon and iteration < max_iter:
+                iteration += 1
+                clusters, clusters_inv = e_step(alpha, beta, covariance, covariance_prime, mu, mu_prime, min_kl_cache)
+                m_step(alpha, beta, clusters, covariance, covariance_prime, mu, mu_prime)
 
-    if delta > epsilon:
-        print('EM did not converge- using fallback')
-        return beta_init, mu_prime_init, covariance_prime_init
+                prev_d_val = d_val
+                d_val = 0
+                for t, (alpha_, mu_, cov_) in enumerate(zip(alpha, mu, covariance)):
+                    min_dist, selected_cluster = min_kl(beta, cov_, covariance_prime, mu_, mu_prime)
+                    min_kl_cache[t] = (min_dist, selected_cluster)
+                    d_val += alpha_ * min_dist
+                delta = prev_d_val - d_val
+                if delta < 0:
+                    print('EM bug - not monotonic- using fallback')
+                    return beta_init, mu_prime_init, covariance_prime_init
+                #Log.debug('Iteration {}, d_val={}, delta={}, k={}, n={}'.format(iteration, d_val, delta, k, n))
+
+            if delta > epsilon:
+                print('EM did not converge- using fallback')
+                return beta_init, mu_prime_init, covariance_prime_init
+    except Timeout.Timeout:
+        print "EM Timeout - using fallback"
     return beta, mu_prime, covariance_prime
 
 
@@ -155,6 +185,7 @@ def min_kl(beta, cov_, covariance_prime, mu_, mu_prime):
             2 * cov_g[:, 1])
     kl = div + log_ratio
     return kl.min(), kl.argmin()
+
 
 def m_step(alpha, beta, clusters, covariance, covariance_prime, mu, mu_prime):
     for j, t_vals in clusters.iteritems():
