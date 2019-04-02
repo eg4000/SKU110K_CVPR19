@@ -9,7 +9,7 @@ Add few results from the paper
 
 ## Citation
 
-
+```
 @article{1904.00853,
 Author = {Eran Goldman* and Roei Herzig* and Aviv Eisenschtat* and Jacob Goldberger and Tal Hassner},
 Title = {Precise Detection in Densely Packed Scenes},
@@ -17,3 +17,4 @@ Year = {2019},
 Eprint = {arXiv:1904.00853},
 Howpublished = {IEEE Conference on Computer Vision and Pattern Recognition, 2019},
 }
+```
