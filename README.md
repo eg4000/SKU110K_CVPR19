@@ -10,7 +10,7 @@ Add few results from the paper
 ## Citation
 
 ```
-@article{Goldman_dense_pckgs,
+@article{goldman2019dense,
 Author = {Eran Goldman and Roei Herzig and Aviv Eisenschtat and Jacob Goldberger and Tal Hassner},
 Title = {Precise Detection in Densely Packed Scenes},
 Year = {2019},
