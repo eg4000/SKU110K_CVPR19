@@ -1,8 +1,6 @@
 # SKU110K
 Dataset ...
-Codebase for CVPR2019 "-" [[Paper link]](https://---.pdf)
-
-Author: -. Date: -
+Codebase for CVPR2019 "Precise Detection in Densely Packed Scenes" [[Paper link]](https://arxiv.org/pdf/1904.00853.pdf)
 
 ## To be added
 
@@ -11,15 +9,13 @@ Add few results from the paper
 <img src="qualitive_results.png" width="750">
 
 ## Citation
-Please cite our git repo if you use this code in your own work (*to be changed to our repo*):
+Please cite our git repo if you use this code in your own work:
+```
 
-```
-@misc{herzig_relation_maskrcnn,
-  title={Relation Mask R-CNN for object detection based on Graph Permutation Invariant},
-  author={Herzig, Roei},
-  year={2018},
-  publisher={Github},
-  journal={GitHub repository},
-  howpublished={\url{https://github.com/roeiherz/RelationMaskRCNN}},
+@article{1904.00853,
+Author = {Eran Goldman* and Roei Herzig* and Aviv Eisenschtat* and Jacob Goldberger and Tal Hassner},
+Title = {Precise Detection in Densely Packed Scenes},
+Year = {2019},
+Eprint = {arXiv:1904.00853},
+Howpublished = {IEEE Conference on Computer Vision and Pattern Recognition, 2019},
 }
-```
