@@ -3,9 +3,17 @@ Dataset and Codebase for CVPR2019 "Precise Detection in Densely Packed Scenes" [
 
 ## To be added
 
+## Dataset
+
+## Method
+
 ## Qualitative Results
 Add few results from the paper
 <img src="qualitive_results.png" width="750">
+
+## Dependencies
+
+## Usage
 
 ## Citation
 
