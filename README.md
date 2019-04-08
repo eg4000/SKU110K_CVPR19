@@ -18,11 +18,10 @@ Add few results from the paper
 ## Citation
 
 ```
-@article{goldman2019dense,
-Author = {Eran Goldman and Roei Herzig and Aviv Eisenschtat and Jacob Goldberger and Tal Hassner},
-Title = {Precise Detection in Densely Packed Scenes},
-Year = {2019},
-Eprint = {arXiv:1904.00853},
-Howpublished = {IEEE Conference on Computer Vision and Pattern Recognition, 2019},
+@inproceedings{goldman2019dense,
+ author    = {Eran Goldman and Roei Herzig and Aviv Eisenschtat and Jacob Goldberger and Tal Hassner},
+ title     = {Precise Detection in Densely Packed Scenes},
+ booktitle = {Proc. Conf. Comput. Vision Pattern Recognition (CVPR)},
+ year      = {2019}
 }
 ```
