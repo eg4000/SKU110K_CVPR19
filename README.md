@@ -4,7 +4,7 @@ Dataset and Codebase for CVPR2019 "Precise Detection in Densely Packed Scenes" [
 <!---[alt text](figures/teaser_width.jpg)--->
 <img src="figures/teaser_width.jpg" width="750">
 
-A typical image in our SKU110K, showing densely packed objects. (Top) (a) Detection results for the state-of-the-art RetinaNet[2], showing incorrect and overlapping detections, especially for the dark objects at the bottom which are harder to separate. (b) Our results showing far fewer misdetections and better fitting bounding boxes. (Bottom) Zoomed-in views for (c) RetinaNet[2] and (d) our method.
+A typical image in our SKU110K, showing densely packed objects. (a) Detection results for the state-of-the-art RetinaNet[2], showing incorrect and overlapping detections, especially for the dark objects at the bottom which are harder to separate. (b) Our results showing far fewer misdetections and better fitting bounding boxes. (c) Zoomed-in views for RetinaNet[2] and (d) our method.
 
 ## Introduction
 
