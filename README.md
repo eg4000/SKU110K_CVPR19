@@ -38,8 +38,10 @@ Qualitative detection results on SKU-110K.
 <img src="figures/qualitative.jpg" width="750">
 
 ## Dependencies
+TBD.
 
 ## Usage
+TBD.
 
 ## References
 [1] Eran Goldman*, Roei Herzig*, Aviv Eisenschtat*, Jacob Goldberger, Tal Hassner, [Precise Detection in Densely Packed Scenes](https://arxiv.org/abs/1904.00853), 2019.
