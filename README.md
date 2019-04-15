@@ -9,7 +9,7 @@ A typical image in our SKU-110K, showing densely packed objects. (a) Detection r
 
 ### Our novel contributions are:
 1. **Soft-IoU layer**, added to an object detector to estimate the Jaccard index between the detected box and the (unknown) ground truth box.
-2. **EM-Merger unit**, which converts detections and SoftIoU scores into a MoG (Mixture of Gaussians), and resolves overlapping detections in packed scenes.
+2. **EM-Merger unit**, which converts detections and Soft-IoU scores into a MoG (Mixture of Gaussians), and resolves overlapping detections in packed scenes.
 3. **A new data set and benchmark**, the store keeping unit, 110k categories (SKU-110K), for item detection in store shelf images from around the world.
 
 ## Introduction
