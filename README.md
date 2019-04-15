@@ -2,7 +2,7 @@
 Dataset and Codebase for CVPR2019 "Precise Detection in Densely Packed Scenes" [[Paper link]](https://arxiv.org/pdf/1904.00853.pdf)
 
 <!---[alt text](figures/teaser.jpg)--->
-<img src="figures/teaser.jpg" width="750">
+<img src="figures/teaser.jpg" width="500">
 
 ## Introduction
 
