@@ -19,6 +19,8 @@ In our SKU-110K paper[1] we focus on detection in densely packed scenes, where i
 ## Method
 We propose learning the Jaccard index with a soft Intersection over Union (Soft-IoU) network layer. This measure provides valuable information on the quality of detection boxes. Those detections can be represented as a Mixture of Gaussians (MoG), reflecting their locations and their Soft-IoU scores. Then, an Expectation-Maximization (EM) based method is then used to cluster these Gaussians into groups, resolving detection overlap conflicts. 
 
+<img src="figures/system.jpg" width="750">
+
 ## Dataset
 
 <img src="figures/benchmarks_comparison.jpg" width="750">
