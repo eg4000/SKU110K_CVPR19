@@ -21,6 +21,11 @@ We propose learning the Jaccard index with a soft Intersection over Union (Soft-
 
 <img src="figures/system.jpg" width="750">
 
+System diagram: (a) Input image. (b) A base network, with bounding box (BB) and objectness (Obj.) heads, along
+with our novel Soft-IoU layer. (c) Our EM-Merger converts Soft-IoU to Gaussian heat-map representing (d) objects captured by
+multiple, overlapping bounding boxes. (e) It then analyzes these box clusters, producing a single detection per object
+
+
 ## Dataset
 
 <img src="figures/benchmarks_comparison.jpg" width="750">
