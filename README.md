@@ -1,6 +1,12 @@
 # SKU110K
 Dataset and Codebase for CVPR2019 "Precise Detection in Densely Packed Scenes" [[Paper link]](https://arxiv.org/pdf/1904.00853.pdf)
 
+<!---[alt text](figures/teaser.jpg)--->
+<img src="figures/teaser.jpg" width="750">
+
+## Introduction
+
+
 ## To be added
 
 ## Dataset
@@ -14,6 +20,9 @@ Add few results from the paper
 ## Dependencies
 
 ## Usage
+
+## References
+
 
 ## Citation
 
