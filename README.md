@@ -6,6 +6,12 @@ Dataset and Codebase for CVPR2019 "Precise Detection in Densely Packed Scenes" [
 
 A typical image in our SKU-110K, showing densely packed objects. (a) Detection results for the state-of-the-art RetinaNet[2], showing incorrect and overlapping detections, especially for the dark objects at the bottom which are harder to separate. (b) Our results showing far fewer misdetections and better fitting bounding boxes. (c) Zoomed-in views for RetinaNet[2] and (d) our method.
 
+
+### Our novel contributions are:
+1. **Soft-IoU layer**, added to an object detector to estimate the Jaccard index between the detected box and the (unknown) ground truth box.
+2. **EM-Merger unit**, which converts detections and SoftIoU scores into a MoG (Mixture of Gaussians), and resolves overlapping detections in packed scenes.
+3. **A new data set and benchmark**, the store keeping unit, 110k categories (SKU-110K), for item detection in store shelf images from around the world.
+
 ## Introduction
 In our SKU-110K paper[1] we focus on detection in densely packed scenes, where images contain many objects, often looking similar or even identical, positioned in close proximity. These scenes are typically man-made, with examples including retail shelf displays, traffic, and urban landscape images. Despite the abundance of such environments, they are under-represented in existing object detection benchmarks, therefore, it is unsurprising that state-of-the-art object detectors are challenged by such images.
 
