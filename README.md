@@ -33,8 +33,9 @@ multiple, overlapping bounding boxes. (e) It then analyzes these box clusters, p
 We compare between key properties for related benchmarks. **#Img.**: Number of images. **#Obj./img.**: Average items per image. **#Cls.**: Number of object classes (more implies a harder detection problem due to greater appearance variations). **#Cls./img.**: Average classes per image. **Dense**: Are objects typically densely packed together, raising potential overlapping detection problems?. **Idnt**: Do images contain multiple identical objects or hard to separate object sub-regions?. **BB**: Bounding box labels available for measuring detection accuracy?.
 
 ## Qualitative Results
-Add few results from the paper
-<img src="qualitive_results.png" width="750">
+Qualitative detection results on SKU-110K. 
+
+<img src="figures/qualitative.jpg" width="750">
 
 ## Dependencies
 
