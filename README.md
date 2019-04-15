@@ -15,7 +15,7 @@ We propose learning the Jaccard index with a soft Intersection over Union (Soft-
 
 ## Dataset
 
-<img src="figures/banchmarks_comparison.jpg" width="750">
+<img src="figures/benchmarks_comparison.jpg" width="750">
 
 ## Qualitative Results
 Add few results from the paper
