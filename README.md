@@ -1,4 +1,4 @@
-# SKU110K
+# SKU-110K
 Dataset and Codebase for CVPR2019 "Precise Detection in Densely Packed Scenes" [[Paper link]](https://arxiv.org/pdf/1904.00853.pdf)
 
 <!---[alt text](figures/teaser_width.jpg)--->
@@ -15,7 +15,7 @@ We propose learning the Jaccard index with a soft Intersection over Union (Soft-
 
 ## Dataset
 
-
+<img src="figures/banchmarks_comparison.jpg" width="750">
 
 ## Qualitative Results
 Add few results from the paper
