@@ -46,6 +46,8 @@ TBD.
 ## Usage
 TBD.
 
+We are currently working on creating an open-source version of the code, which we plan to release soon.
+
 ## References
 [1] Eran Goldman*, Roei Herzig*, Aviv Eisenschtat*, Jacob Goldberger, Tal Hassner, [Precise Detection in Densely Packed Scenes](https://arxiv.org/abs/1904.00853), 2019.
 
