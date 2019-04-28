@@ -45,6 +45,8 @@ class Evaluate(keras.callbacks.Callback):
         super(Evaluate, self).__init__()
 
     def on_epoch_end(self, epoch, logs=None):
+        # TODO fix mAP formala
+
         logs = logs or {}
 
         # run evaluation

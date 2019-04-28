@@ -54,10 +54,9 @@ class DuplicateMerger(object):
         Params.box_size_factor = 0.5
         Params.min_box_size = 5
         Params.ellipsoid_thresh = 0.5
-        Params.angle = False
         Params.min_k = 0
-        Params.shallow = False
 
+        # TODO time optimization: split into initial clusters using gaussian information rather than heatmap contours
         heat_map = numpy.zeros(shape=[image.shape[0], image.shape[1], 1], dtype=numpy.float64)
         original_detection_centers = self.shrink_boxes(data, heat_map)
 
@@ -69,7 +68,8 @@ class DuplicateMerger(object):
         candidates = self.find_new_candidates(contours, heat_map, data, original_detection_centers, image)
         candidates = self.map_original_boxes_to_new_boxes(candidates, original_detection_centers)
 
-
+        # TODO time optimization: parallelize contours/clusters resolvers.
+        # TODO time optimization: convert numpy to tensorflow/keras
         best_detection_ids = {}
         filtered_data = pandas.DataFrame(columns=data.columns)
         for i, candidate in candidates.iteritems():
@@ -81,21 +81,24 @@ class DuplicateMerger(object):
             # best_detection_id = original_detections.confidence.argmax()
             # best_detection_id = original_detections.hard_score.argmax()
             best_detection = original_detections.ix[best_detection_id].copy()
-            original_detections = original_detections[original_detections.confidence > 10.5]
-            if original_detections.shape[0] > 0:
-                w = original_detections['x2'] - original_detections['x1']
-                h = original_detections['y2'] - original_detections['y1']
-                x = original_detections['x1'] + 0.5 * w
-                y = original_detections['y1'] + 0.5 * h
 
-                med_x = int(round(scipy.percentile(x, 50)))
-                med_y = int(round(scipy.percentile(y, 50)))
-                med_w = int(round(scipy.percentile(w, 50)))
-                med_h = int(round(scipy.percentile(h, 50)))
-                best_detection['x1'] = med_x - med_w / 2
-                best_detection['y1'] = med_y - med_h / 2
-                best_detection['x2'] = med_x + med_w / 2
-                best_detection['y2'] = med_y + med_h / 2
+            # The following code creates the median bboxes
+            # original_detections = original_detections[original_detections.confidence > 0.5]
+            # if original_detections.shape[0] > 0:
+            #     w = original_detections['x2'] - original_detections['x1']
+            #     h = original_detections['y2'] - original_detections['y1']
+            #     x = original_detections['x1'] + 0.5 * w
+            #     y = original_detections['y1'] + 0.5 * h
+            #
+            #     med_x = int(round(scipy.percentile(x, 50)))
+            #     med_y = int(round(scipy.percentile(y, 50)))
+            #     med_w = int(round(scipy.percentile(w, 50)))
+            #     med_h = int(round(scipy.percentile(h, 50)))
+            #     best_detection['x1'] = med_x - med_w / 2
+            #     best_detection['y1'] = med_y - med_h / 2
+            #     best_detection['x2'] = med_x + med_w / 2
+            #     best_detection['y2'] = med_y + med_h / 2
+
             best_detection_ids[best_detection_id] = best_detection
             filtered_data = filtered_data.append(best_detection)
 
