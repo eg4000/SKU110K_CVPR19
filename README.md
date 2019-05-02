@@ -49,4 +49,4 @@ e.g:
 nohup env PYTHONPATH="/home/ubuntu/dev/SKU110K" python -u object_detector_retinanet/keras_retinanet/bin/evaluate_iou.py --gpu 3 csv "/home/erang/Documents/SKU110K/snapshot/Thu_May__2_17:10:30_2019/iou_resnet50_csv_07.h5" --hard_score_rate=0.5 > predict_sku110k.log &
 
 
-
+The results are saved in CSV format in the "results" folder and drawn in "res_images_iou" folder.
