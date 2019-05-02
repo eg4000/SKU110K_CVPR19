@@ -356,7 +356,7 @@ class DuplicateMerger(object):
         return new_candidates
 
 
-def local_res(image_name, results):
+def merge_detections(image_name, results):
     project = 'SKU_dataset'
     result_df = pandas.DataFrame()
     result_df['x1'] = results[:, 0].astype(int)
@@ -386,4 +386,4 @@ def local_res(image_name, results):
 
 
 if __name__ == '__main__':
-    local_res()
+    merge_detections()

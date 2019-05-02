@@ -39,13 +39,9 @@ from keras.utils import multi_gpu_model
 from object_detector_retinanet.keras_retinanet import losses
 from object_detector_retinanet.keras_retinanet import models
 from object_detector_retinanet.keras_retinanet.callbacks import RedirectModel
-from object_detector_retinanet.keras_retinanet.callbacks.eval_iou import Evaluate
 from object_detector_retinanet.keras_retinanet.layers.retinanet_iou_layer import retinanet_iou
 from object_detector_retinanet.keras_retinanet.models.retinanet import retinanet_bbox, AnchorParameters, iou_submodels
 from object_detector_retinanet.keras_retinanet.preprocessing.csv_generator_iou import CSVIouGenerator
-from object_detector_retinanet.keras_retinanet.preprocessing.kitti import KittiGenerator
-from object_detector_retinanet.keras_retinanet.preprocessing.open_images import OpenImagesGenerator
-from object_detector_retinanet.keras_retinanet.preprocessing.pascal_voc import PascalVocGenerator
 from object_detector_retinanet.keras_retinanet.utils.anchors import make_shapes_callback, anchor_targets_bbox
 from object_detector_retinanet.keras_retinanet.utils.keras_version import check_keras_version
 from object_detector_retinanet.keras_retinanet.utils.model import freeze as freeze_model
@@ -128,6 +124,7 @@ def create_models(backbone_retinanet, num_classes, weights, multi_gpu=0, freeze_
             'iou_regression_output': losses.iou_score()
         },
         optimizer=keras.optimizers.adam(lr=1e-5, clipnorm=0.001)
+        # optimizer=keras.optimizers.SGD()
     )
 
     return model, iou_model, prediction_model
@@ -164,17 +161,6 @@ def create_callbacks(model, training_model, prediction_model, validation_generat
         )
         callbacks.append(tensorboard_callback)
 
-    if args.evaluation and validation_generator:
-        if args.dataset_type == 'coco':
-            from ..callbacks.coco import CocoEval
-
-            # use prediction model for evaluation
-            evaluation = CocoEval(validation_generator, tensorboard=tensorboard_callback)
-        else:
-            evaluation = Evaluate(validation_generator, tensorboard=tensorboard_callback)
-        evaluation = RedirectModel(evaluation, prediction_model)
-        callbacks.append(evaluation)
-
     # save the model
     if args.snapshots:
         # ensure directory created first; otherwise h5py will error after epoch.
@@ -185,10 +171,7 @@ def create_callbacks(model, training_model, prediction_model, validation_generat
                 'iou_{backbone}_{dataset_type}_{{epoch:02d}}.h5'.format(backbone=args.backbone,
                                                                     dataset_type=args.dataset_type)
             ),
-            verbose=1,
-            # save_best_only=True,
-            # monitor="mAP",
-            # mode='max'
+            verbose=1
         )
         checkpoint = RedirectModel(checkpoint, model)
         callbacks.append(checkpoint)
@@ -227,44 +210,7 @@ def create_generators(args):
     else:
         transform_generator = random_transform_generator(flip_x_chance=0.5)
 
-    if args.dataset_type == 'coco':
-        # import here to prevent unnecessary dependency on cocoapi
-        from ..preprocessing.coco import CocoGenerator
-
-        train_generator = CocoGenerator(
-            args.coco_path,
-            'train2017',
-            transform_generator=transform_generator,
-            batch_size=args.batch_size,
-            image_min_side=args.image_min_side,
-            image_max_side=args.image_max_side
-        )
-
-        validation_generator = CocoGenerator(
-            args.coco_path,
-            'val2017',
-            batch_size=args.batch_size,
-            image_min_side=args.image_min_side,
-            image_max_side=args.image_max_side
-        )
-    elif args.dataset_type == 'pascal':
-        train_generator = PascalVocGenerator(
-            args.pascal_path,
-            'trainval',
-            transform_generator=transform_generator,
-            batch_size=args.batch_size,
-            image_min_side=args.image_min_side,
-            image_max_side=args.image_max_side
-        )
-
-        validation_generator = PascalVocGenerator(
-            args.pascal_path,
-            'test',
-            batch_size=args.batch_size,
-            image_min_side=args.image_min_side,
-            image_max_side=args.image_max_side
-        )
-    elif args.dataset_type == 'csv':
+    if args.dataset_type == 'csv':
         train_generator = CSVIouGenerator(
             args.annotations,
             args.classes,
@@ -286,48 +232,6 @@ def create_generators(args):
             )
         else:
             validation_generator = None
-    elif args.dataset_type == 'oid':
-        train_generator = OpenImagesGenerator(
-            args.main_dir,
-            subset='train',
-            version=args.version,
-            labels_filter=args.labels_filter,
-            annotation_cache_dir=args.annotation_cache_dir,
-            fixed_labels=args.fixed_labels,
-            transform_generator=transform_generator,
-            batch_size=args.batch_size,
-            image_min_side=args.image_min_side,
-            image_max_side=args.image_max_side
-        )
-
-        validation_generator = OpenImagesGenerator(
-            args.main_dir,
-            subset='validation',
-            version=args.version,
-            labels_filter=args.labels_filter,
-            annotation_cache_dir=args.annotation_cache_dir,
-            fixed_labels=args.fixed_labels,
-            batch_size=args.batch_size,
-            image_min_side=args.image_min_side,
-            image_max_side=args.image_max_side
-        )
-    elif args.dataset_type == 'kitti':
-        train_generator = KittiGenerator(
-            args.kitti_path,
-            subset='train',
-            transform_generator=transform_generator,
-            batch_size=args.batch_size,
-            image_min_side=args.image_min_side,
-            image_max_side=args.image_max_side
-        )
-
-        validation_generator = KittiGenerator(
-            args.kitti_path,
-            subset='val',
-            batch_size=args.batch_size,
-            image_min_side=args.image_min_side,
-            image_max_side=args.image_max_side
-        )
     else:
         raise ValueError('Invalid data type received: {}'.format(args.dataset_type))
 
@@ -488,6 +392,7 @@ def main(args=None):
 
     # create the generators
     train_generator, validation_generator = create_generators(args)
+    print('train_size:{},val_size:{}'.format(train_generator.size(),validation_generator.size()))
 
     # create the model
     if args.snapshot is not None:
@@ -511,7 +416,7 @@ def main(args=None):
         )
 
     # print model summary
-    print(model.summary())
+    # print(model.summary())
 
     # this lets the generator compute backbone layer shapes using the actual backbone model
     if 'vgg' in args.backbone or 'densenet' in args.backbone:
@@ -536,6 +441,8 @@ def main(args=None):
         epochs=args.epochs,
         verbose=1,
         callbacks=callbacks,
+        validation_data=validation_generator,
+        validation_steps=validation_generator.size()
     )
 
 

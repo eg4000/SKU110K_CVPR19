@@ -4,7 +4,6 @@ import scipy
 import numpy
 
 import signal
-import time
 
 class Timeout():
     """Timeout class using ALARM signal."""

@@ -1,7 +1,9 @@
 This is *NOT* the paper web page but just an internal code repo for us. 
 
 ## Notes
+
 This implementation is built on top of https://github.com/fizyr/keras-retinanet.
+Dependencies include: 'keras', 'keras-resnet', 'six', 'scipy'. 'Pillow', 'pandas', 'tensorflow-gpu'
 
 The SKU110K dataset is provided in csv format compatible with the code CSV parser.
 
@@ -11,8 +13,9 @@ This repository requires Keras 2.2.4 or higher.
 
 This repository is tested using Python 2.7.6 and OpenCV 3.1.
 
-Note: The detector here is a stronger version of the one we originally used, and can thus achieve
-higher results than the ones we originally reported.
+Note:
+We have made several upgrades to the baseline detector since the beginning of this research, so the latest version can actually
+achieve even higher results than the ones originally reported.
 
 The EM-merger provided here is the stable version (not time-optimized). Some of the changes required for
 optimization are mentioned in the TO-DO comments.

@@ -1,5 +1,3 @@
-from distutils.log import Log
-
 import numpy
 
 X1 = 'x1'
