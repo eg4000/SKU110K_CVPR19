@@ -1,4 +1,6 @@
-This is *NOT* the paper web page but just an internal code repo for us. 
+This is *NOT* the project web page. 
+
+*Code has not been tested*
 
 ## Notes
 
@@ -11,8 +13,7 @@ This repository requires Keras 2.2.4 or higher, and was tested using Python 2.7.
 The output files will be saved under "$HOME"/Documents/SKU110K and have the same structure as in https://github.com/fizyr/keras-retinanet:
 The weight h5 files will are saved in the "snapshot" folder and the tensorboard log files are saved in the "logs" folder.
 
-Note:
-We have made several upgrades to the baseline detector since the beginning of this research, so the latest version can actually
+Note that we have made several upgrades to the baseline detector since the beginning of this research, so the latest version can actually
 achieve even higher results than the ones originally reported.
 
 The EM-merger provided here is the stable version (not time-optimized). Some of the changes required for
@@ -46,7 +47,7 @@ python -u object_detector_retinanet/keras_retinanet/bin/predict.py csv WEIGHT_FI
 where WEIGHT_FILE is the full path to the h5 file from step (2), and 0<=RATE<=1 computes the confidence as a weighted average between soft and hard scores. 
 
 e.g:
-nohup env PYTHONPATH="/home/ubuntu/dev/SKU110K" python -u object_detector_retinanet/keras_retinanet/bin/evaluate_iou.py --gpu 3 csv "/home/erang/Documents/SKU110K/snapshot/Thu_May__2_17:10:30_2019/iou_resnet50_csv_07.h5" --hard_score_rate=0.5 > predict_sku110k.log &
+nohup env PYTHONPATH="/home/ubuntu/dev/SKU110K" python -u object_detector_retinanet/keras_retinanet/bin/evaluate_iou.py --gpu 3 csv "/home/ubuntu/Documents/SKU110K/snapshot/Thu_May__2_17:10:30_2019/iou_resnet50_csv_07.h5" --hard_score_rate=0.5 > predict_sku110k.log &
 
 
 The results are saved in CSV format in the "results" folder and drawn in "res_images_iou" folder.
