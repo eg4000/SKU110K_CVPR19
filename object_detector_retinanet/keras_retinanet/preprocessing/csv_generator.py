@@ -21,6 +21,7 @@ import cv2
 import numpy as np
 from PIL import Image
 from six import raise_from
+from tqdm import tqdm
 
 import csv
 import sys
@@ -69,7 +70,8 @@ def _read_images(base_dir):
     for project in dirs:
         project_imgs = os.listdir(os.path.join(base_dir, project))
         i = 0
-        for image in project_imgs:
+        print("Loading images...")
+        for image in tqdm(project_imgs):
             try:
                 img_file = os.path.join(base_dir, project, image)
                 # Check images exists
