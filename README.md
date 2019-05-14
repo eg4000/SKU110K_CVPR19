@@ -38,7 +38,7 @@ train:
 where WEIGHT_FILE is the full path to the h5 file from step (1)
 
 e.g.:
-`python -u object_detector_retinanet/keras_retinanet/bin/train_iou.py --gpu 0 --weights "/home/ubuntu/Documents/SKU110K/snapshot/Thu_May__2_17:07:11_2019/resnet50_csv_10.h5" > train_iou_sku110k.log &`
+`python -u object_detector_retinanet/keras_retinanet/bin/train_iou.py --gpu 0 --weights "/home/ubuntu/Documents/SKU110K/snapshot/Thu_May__2_17:07:11_2019/resnet50_csv_10.h5" csv > train_iou_sku110k.log &`
 
 
 (3) predict:
