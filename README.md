@@ -25,7 +25,9 @@ Contributions to this project are welcome.
 
 Move the unzipped SKU100K folder to "$HOME"/Documents
 
-Set $PYTHONPATH to the repository root e.g. "/home/ubuntu/dev/SKU110K"
+Set $PYTHONPATH to the repository root 
+
+e.g. from this repository: `export PYTHONPATH=$(pwd)`
 
 train:
 
