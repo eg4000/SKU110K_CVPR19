@@ -36,7 +36,7 @@ train:
 
 (2) train the IoU layer:
 
-`python -u object_detector_retinanet/keras_retinanet/bin/train_iou.py --WEIGHT_FILE csv`
+`python -u object_detector_retinanet/keras_retinanet/bin/train_iou.py --weights WEIGHT_FILE csv`
 where WEIGHT_FILE is the full path to the h5 file from step (1)
 
 e.g.:
