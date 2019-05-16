@@ -110,6 +110,15 @@ def _read_annotations(csv_reader, classes, base_dir, image_existence):
             width = int(width)
             height = int(height)
 
+            if x1 >= width:
+                x1 = width -1
+            if x2 >= width:
+                x2 = width -1
+
+            if y1 > height:
+                y1 = height -1
+            if y2 >= height:
+                y2 = height -1
             # x1 < 0 | y1 < 0 | x2 <= 0 | y2 <= 0
             if x1 < 0 or y1 < 0 or x2 <= 0 or y2 <= 0:
                 print("Warning: Image file {} has some bad boxes annotations".format(img_file))
