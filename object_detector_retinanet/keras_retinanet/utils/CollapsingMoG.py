@@ -107,7 +107,7 @@ def collapse(original_detection_centers, k, offset, max_iter=100, epsilon=1e-100
 
             beta, mu_prime, covariance_prime = agglomerative_init(alpha.copy(), mu.copy(), covariance.copy(), n, k)
     except Timeout.Timeout:
-        print "agglomerative_init Timeout - using fallback"
+        print ("agglomerative_init Timeout - using fallback")
         return None, None, None
 
     try:
@@ -141,7 +141,7 @@ def collapse(original_detection_centers, k, offset, max_iter=100, epsilon=1e-100
                 print('EM did not converge- using fallback')
                 return beta_init, mu_prime_init, covariance_prime_init
     except Timeout.Timeout:
-        print "EM Timeout - using fallback"
+        print ("EM Timeout - using fallback")
     return beta, mu_prime, covariance_prime
 
 

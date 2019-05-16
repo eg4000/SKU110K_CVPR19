@@ -36,6 +36,7 @@ def gaussian_blur(w, h):
 
 
 def aggregate_gaussians(sub_range, shape, width, height, confidence, boxes):
+    shape = [int(x) for x in shape]
     heat_map = numpy.zeros(shape=shape, dtype=numpy.float64)
     for i in sub_range:
         curr_gaussian = gaussian_blur(width[i], height[i])
@@ -72,7 +73,7 @@ class DuplicateMerger(object):
         # TODO time optimization: convert numpy to tensorflow/keras
         best_detection_ids = {}
         filtered_data = pandas.DataFrame(columns=data.columns)
-        for i, candidate in candidates.iteritems():
+        for i, candidate in candidates.items():
             label = candidate['original_detection_ids']
             original_detections = data.ix[label]
             original_detections[
@@ -110,7 +111,10 @@ class DuplicateMerger(object):
     def find_new_candidates(self, contours, heat_map, data, original_detection_centers, image):
         candidates = []
         for contour_i, contour in enumerate(contours[1]):
-            contour_bounding_rect = cv2.boundingRect(contour)
+            try:
+                contour_bounding_rect = cv2.boundingRect(contour)
+            except:
+                continue
             contour_bbox = extract_boxes_from_edge_boxes(numpy.array(contour_bounding_rect))[0]
             box_width = contour_bbox[BOX.X2] - contour_bbox[BOX.X1]
             box_height = contour_bbox[BOX.Y2] - contour_bbox[BOX.Y1]
@@ -140,7 +144,7 @@ class DuplicateMerger(object):
                         beta, mu, cov = collapse(original_detection_centers[original_indexes].copy(), k, offset,
                                                  max_iter=20, epsilon=1e-10)
                     if mu is None:  # k<=Params.min_k or EM failed
-                        print n, k, ' k<=Params.min_k or EM failed'
+                        print (n, k, ' k<=Params.min_k or EM failed')
                         self.perform_nms(candidates, contour_i, curr_data)
                     else:  # successful EM
                         cov, mu, num, roi = self.remove_redundant(contour_bbox, cov, k, mu, image, sub_heat_map)
