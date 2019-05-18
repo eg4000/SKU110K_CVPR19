@@ -8,7 +8,7 @@ This implementation is built on top of https://github.com/fizyr/keras-retinanet.
 The SKU110K dataset is provided in csv format compatible with the code CSV parser.
 
 Dependencies include: `keras`, `keras-resnet`, `six`, `scipy`. `Pillow`, `pandas`, `tensorflow-gpu`, `tqdm`
-This repository requires `Keras 2.2.4` or higher, and was tested using `Python 2.7.6` and `Python 3.6.5`  and `OpenCV 3.1`.
+This repository requires `Keras 2.2.4` or higher, and was tested using `Python 3.6.5` and `OpenCV 4.1`.
 
 The output files will be saved under "$HOME"/Documents/SKU110K and have the same structure as in https://github.com/fizyr/keras-retinanet:
 The weight h5 files will are saved in the "snapshot" folder and the tensorboard log files are saved in the "logs" folder.
