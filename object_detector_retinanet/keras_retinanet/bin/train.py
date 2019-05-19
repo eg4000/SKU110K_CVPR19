@@ -304,7 +304,7 @@ def parse_args(args):
     csv_parser.add_argument('--annotations', help='Path to CSV file containing annotations for training.',
                             default=args_annotations)
     csv_parser.add_argument('--classes', help='Path to a CSV file containing class label mapping.',
-                            default=os.path.join(os.getcwd(), 'class_mappings.csv'))
+                            default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'class_mappings.csv'))
     csv_parser.add_argument('--val-annotations',
                             help='Path to CSV file containing annotations for validation (optional).',
                             default=args_val_annotations)
