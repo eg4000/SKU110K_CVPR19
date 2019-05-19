@@ -72,13 +72,12 @@ def parse_args(args):
 
     data_dir = annotation_path()
     args_annotations = data_dir + '/annotations_test.csv'
-    args_classes = data_dir + '/class_mappings_test.csv'
 
     csv_parser = subparsers.add_parser('csv')
     csv_parser.add_argument('--annotations', help='Path to CSV file containing annotations for evaluation.',
                             default=args_annotations)
     csv_parser.add_argument('--classes', help='Path to a CSV file containing class label mapping.',
-                            default=args_classes)
+                            default='class_mappings.csv')
     parser.add_argument('--hard_score_rate', help='', default=1.)
 
     parser.add_argument('model', help='Path to RetinaNet model.')
