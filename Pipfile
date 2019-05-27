@@ -1,0 +1,22 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+keras = "*"
+tensorflow = "*"
+numpy = "*"
+tqdm = "*"
+pillow = "*"
+keras-retinanet = "*"
+pandas = "*"
+
+
+[dev-packages]
+
+jupyter = "*"
+matplotlib = "*"

@@ -16,11 +16,13 @@ limitations under the License.
 """
 
 from .generator import Generator
+from object_detector_retinanet.keras_retinanet.preprocessing.get_image_size import get_image_size
 from ..utils.image import read_image_bgr
 import cv2
 import numpy as np
 from PIL import Image
 from six import raise_from
+from tqdm import tqdm
 
 import csv
 import sys
@@ -69,18 +71,19 @@ def _read_images(base_dir):
     for project in dirs:
         project_imgs = os.listdir(os.path.join(base_dir, project))
         i = 0
-        for image in project_imgs:
+        print("Loading images...")
+        for image in tqdm(project_imgs):
             try:
                 img_file = os.path.join(base_dir, project, image)
                 # Check images exists
-                img = read_image_bgr(img_file)
-                # img = cv2.imread(img_file)
-                if img is None:
+                exists = os.path.isfile(img_file)
+                
+                if not exists:
                     print("Warning: Image file {} is not existing".format(img_file))
                     continue
 
                 # Image shape
-                height, width = img.shape[:2]
+                height, width = get_image_size(img_file)
                 result[img_file] = {"width": width, "height": height}
                 i += 1
                 # if i == 10:
@@ -101,7 +104,22 @@ def _read_annotations(csv_reader, classes, base_dir, image_existence):
 
         try:
             img_file, x1, y1, x2, y2, class_name, width, height = row[:]
+            x1 = int(x1)
+            x2 = int(x2)
+            y1 = int(y1)
+            y2 = int(y2)
+            width = int(width)
+            height = int(height)
 
+            if x1 >= width:
+                x1 = width -1
+            if x2 >= width:
+                x2 = width -1
+
+            if y1 > height:
+                y1 = height -1
+            if y2 >= height:
+                y2 = height -1
             # x1 < 0 | y1 < 0 | x2 <= 0 | y2 <= 0
             if x1 < 0 or y1 < 0 or x2 <= 0 or y2 <= 0:
                 print("Warning: Image file {} has some bad boxes annotations".format(img_file))
