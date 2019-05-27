@@ -294,17 +294,18 @@ def parse_args(args):
     oid_parser.add_argument('--fixed-labels', help='Use the exact specified labels.', default=False)
 
     data_dir = annotation_path()
-    args_annotations = data_dir + '/annotations_train.csv'
-    args_val_annotations = data_dir + '/annotations_val.csv'
+    args_annotations = os.path.join(data_dir, '/annotations_train.csv')
+    args_classes = os.path.join(data_dir, '/class_mappings_train.csv')
+    args_val_annotations = os.path.join(data_dir, '/annotations_val.csv')
 
-    args_snapshot_path = root_dir() + '/snapshot'
-    args_tensorboard_dir = root_dir() + '/logs'
+    args_snapshot_path = os.path.join(root_dir(), '/snapshot')
+    args_tensorboard_dir = os.path.join(root_dir(), '/logs')
 
     csv_parser = subparsers.add_parser('csv')
     csv_parser.add_argument('--annotations', help='Path to CSV file containing annotations for training.',
                             default=args_annotations)
     csv_parser.add_argument('--classes', help='Path to a CSV file containing class label mapping.',
-                            default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'class_mappings.csv'))
+                            default=args_classes)
     csv_parser.add_argument('--val-annotations',
                             help='Path to CSV file containing annotations for validation (optional).',
                             default=args_val_annotations)
@@ -379,7 +380,7 @@ def main(args=None):
     keras.backend.tensorflow_backend.set_session(get_session())
 
     # Weights and logs saves in a new locations
-    stmp = time.strftime("%c").replace(" ", "_")
+    stmp = time.strftime("%c").replace(":", "_").replace(" ", "_")
     args.snapshot_path = os.path.join(args.snapshot_path, stmp)
     args.tensorboard_dir = os.path.join(args.tensorboard_dir, stmp)
     print("Weights will be saved in  {}".format(args.snapshot_path))
