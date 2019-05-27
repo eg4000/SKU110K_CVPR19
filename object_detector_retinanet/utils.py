@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+import platform
 
 __author__ = 'roeiherz'
 
@@ -38,7 +39,10 @@ def create_folder(path):
 
 
 def root_dir():
-    return os.path.join(os.getenv("HOME"), 'Documents', 'SKU110K')
+    if platform.system() == 'Linux':
+        return os.path.join(os.getenv('HOME'), 'Documents', 'SKU110K')
+    elif platform.system() == 'Windows':
+        return os.path.abspath('C:/Users/{}/Documents/SKU110K/'.format(os.getenv('username')))
 
 
 def image_path():
