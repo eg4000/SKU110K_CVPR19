@@ -110,7 +110,7 @@ class DuplicateMerger(object):
 
     def find_new_candidates(self, contours, heat_map, data, original_detection_centers, image):
         candidates = []
-        for contour_i, contour in enumerate(contours[0]):
+        for contour_i, contour in enumerate(contours[1]):
             contour_bounding_rect = cv2.boundingRect(contour)
 
             contour_bbox = extract_boxes_from_edge_boxes(numpy.array(contour_bounding_rect))[0]
@@ -149,8 +149,9 @@ class DuplicateMerger(object):
                         cov, mu, num, roi = self.remove_redundant(contour_bbox, cov, k, mu, image, sub_heat_map)
                         self.set_candidates(candidates, cov, heat_map, mu, num, offset, roi, sub_heat_map)
                 elif (k == n):
-                    #print (n, k, ' k==n')
-                    self.perform_nms(candidates, contour_i, curr_data)
+                    pass
+                    # print n, k, ' k==n'
+                    # self.perform_nms(candidates, contour_i, curr_data)
 
         return candidates
 
@@ -381,8 +382,7 @@ def merge_detections(image_name, results):
 #    project = result_df['project'].iloc[0]
     image_name = result_df['image_name'].iloc[0]
     if pixel_data is None:
-#        pixel_data = read_image_bgr(os.path.join(root_dir(),  image_name))
-        pixel_data = read_image_bgr(image_name)
+        pixel_data = read_image_bgr(os.path.join(root_dir(),  image_name))
 
     filtered_data = duplicate_merger.filter_duplicate_candidates(result_df, pixel_data)
     return filtered_data

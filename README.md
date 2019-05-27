@@ -23,7 +23,7 @@ Contributions to this project are welcome.
 
 ## Usage
 
-Move the unzipped SKU100K folder to "$HOME"/Documents
+Move the unzipped SKU110K folder to "$HOME"/Documents
 
 Set $PYTHONPATH to the repository root 
 
@@ -34,7 +34,7 @@ train:
 (1) Train the base model:
 `python -u object_detector_retinanet/keras_retinanet/bin/train.py csv`
 
-(2) train the IoU layer:
+(2) Train the IoU layer:
 
 `python -u object_detector_retinanet/keras_retinanet/bin/train_iou.py --weights WEIGHT_FILE csv`
 where WEIGHT_FILE is the full path to the h5 file from step (1)
