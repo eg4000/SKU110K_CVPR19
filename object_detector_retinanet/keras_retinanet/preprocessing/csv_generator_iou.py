@@ -16,6 +16,7 @@ limitations under the License.
 """
 from object_detector_retinanet.keras_retinanet.preprocessing.generatorIou import \
     GeneratorIou
+from object_detector_retinanet.keras_retinanet.preprocessing.get_image_size import get_image_size
 from ..utils.image import read_image_bgr
 import cv2
 import numpy as np
@@ -73,14 +74,14 @@ def _read_images(base_dir):
             try:
                 img_file = os.path.join(base_dir, project, image)
                 # Check images exists
-                img = read_image_bgr(img_file)
-                # img = cv2.imread(img_file)
-                if img is None:
+                exists = os.path.isfile(img_file)
+                
+                if not exists:
                     print("Warning: Image file {} is not existing".format(img_file))
                     continue
 
                 # Image shape
-                height, width = img.shape[:2]
+                height, width = get_image_size(img_file)
                 result[img_file] = {"width": width, "height": height}
                 i += 1
                 # if i == 10:
