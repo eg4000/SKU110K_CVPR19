@@ -78,7 +78,7 @@ def parse_args(args):
                             default=args_annotations)
     csv_parser.add_argument('--classes', help='Path to a CSV file containing class label mapping.',
                             default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'class_mappings.csv'))
-    parser.add_argument('--hard_score_rate', help='', default=1.)
+    parser.add_argument('--hard_score_rate', help='', default="0.5")
 
     parser.add_argument('model', help='Path to RetinaNet model.')
     parser.add_argument('--base_dir', help='Path to base dir for CSV file.',
@@ -111,7 +111,7 @@ def main(args=None):
     if args.hard_score_rate:
         hard_score_rate = float(args.hard_score_rate.lower())
     else:
-        hard_score_rate = 1.
+        hard_score_rate = 0.5
     print ("hard_score_rate={}".format(hard_score_rate))
     # make sure keras is the minimum required version
     check_keras_version()
