@@ -1,4 +1,6 @@
 # SKU-110K
+#### Eran Goldman* , [Roei Herzig*](https://roeiherz.github.io/) , Aviv Eisenschtat*, [Jacob Goldberger](http://www.eng.biu.ac.il/goldbej/), [Tal Hassner](https://talhassner.github.io/home/)
+
 Dataset and Codebase for CVPR2019 "Precise Detection in Densely Packed Scenes" [[Paper link]](https://arxiv.org/pdf/1904.00853.pdf)
 
 <!---[alt text](figures/teaser_width.jpg)--->
