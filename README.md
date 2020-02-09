@@ -1,3 +1,5 @@
+:new: CVPR 2020 [challenge](#CVPR-2020-Challenge) :new:
+
 # SKU-110K
 #### Eran Goldman* , [Roei Herzig*](https://roeiherz.github.io/) , Aviv Eisenschtat*, [Jacob Goldberger](http://www.eng.biu.ac.il/goldbej/), [Tal Hassner](https://talhassner.github.io/home/)
 
@@ -35,7 +37,10 @@ multiple, overlapping bounding boxes. (e) It then analyzes these box clusters, p
 We compare between key properties for related benchmarks. **#Img.**: Number of images. **#Obj./img.**: Average items per image. **#Cls.**: Number of object classes (more implies a harder detection problem due to greater appearance variations). **#Cls./img.**: Average classes per image. **Dense**: Are objects typically densely packed together, raising potential overlapping detection problems?. **Idnt**: Do images contain multiple identical objects or hard to separate object sub-regions?. **BB**: Bounding box labels available for measuring detection accuracy?.
 
 The dataset is provided for the exclusive use by the recipient and solely for academic and non-commercial purposes. 
-Please email sku110kcvpr19@gmail.com with a **gmail account** if you are interested in the dataset.
+
+##  CVPR 2020 Challenge
+The detection challenge will be held in CVPR 2020 Retail-Vision workshop.
+Please visit our [workshop page](https://retailvisionworkshop.github.io/) for more information. The data and evaluation code code are available in the [challenge page](https://retailvisionworkshop.github.io/detection_challenge_2020/).
 
 ## Qualitative Results
 Qualitative detection results on SKU-110K. 
