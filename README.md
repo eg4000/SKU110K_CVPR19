@@ -40,7 +40,7 @@ The dataset is provided for the exclusive use by the recipient and solely for ac
 
 ##  CVPR 2020 Challenge
 The detection challenge will be held in CVPR 2020 Retail-Vision workshop.
-Please visit our [workshop page](https://retailvisionworkshop.github.io/) for more information. The data and evaluation code code are available in the [challenge page](https://retailvisionworkshop.github.io/detection_challenge_2020/).
+Please visit our [workshop page](https://retailvisionworkshop.github.io/) for more information. The data and evaluation code are available in the [challenge page](https://retailvisionworkshop.github.io/detection_challenge_2020/).
 
 ## Qualitative Results
 Qualitative detection results on SKU-110K. 
