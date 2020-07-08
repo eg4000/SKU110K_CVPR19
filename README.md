@@ -36,7 +36,7 @@ We compare between key properties for related benchmarks. **#Img.**: Number of i
 
 The dataset is provided for the exclusive use by the recipient and solely for academic and non-commercial purposes. 
 
-The dataset can be downloaded from <a href="http://trax-geometry.s3.amazonaws.com/cvpr_challenge/SKU110K_fixed.tar.gz"> here</a> or <a href="https://drive.google.com/file/d/1iq93lCdhaPUN0fWbLieMtzfB1850pKwd">here</a>
+The dataset can be downloaded from <a href="http://trax-geometry.s3.amazonaws.com/cvpr_challenge/SKU110K_fixed.tar.gz"> here</a> or <a href="https://drive.google.com/file/d/1iq93lCdhaPUN0fWbLieMtzfB1850pKwd">here</a>.
 
 A pretrained model is provided <a href="https://drive.google.com/file/d/1f9tRzJSqjuUQzXz8WjJC0V_WD-8y_6wy/view?usp=sharing">here</a>. Note that its performance is slighly better than originally reported in the paper because of improved optimization.
 
