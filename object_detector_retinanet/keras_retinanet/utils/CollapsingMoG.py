@@ -187,7 +187,7 @@ def min_kl(beta, cov_, covariance_prime, mu_, mu_prime):
 
 
 def m_step(alpha, beta, clusters, covariance, covariance_prime, mu, mu_prime):
-    for j, t_vals in clusters.iteritems():
+    for j, t_vals in clusters.items():
         beta_update = 0
         for t in t_vals:
             beta_update += alpha[t]
