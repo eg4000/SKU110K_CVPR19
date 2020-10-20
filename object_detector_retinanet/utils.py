@@ -1,6 +1,4 @@
-import logging
 import os
-import sys
 import platform
 
 __author__ = 'roeiherz'
@@ -9,7 +7,7 @@ FILE_EXISTS_ERROR = (17, 'File exists')
 
 IMG_FOLDER = 'images'
 ANNOTATION_FOLDER = 'annotations'
-DEBUG_MODE = False #'ubuntu' not in os.environ['HOME']
+DEBUG_MODE = False # 'ubuntu' not in os.environ['HOME']
 if DEBUG_MODE:
     IMG_FOLDER += '_debug'
     ANNOTATION_FOLDER += '_debug'

@@ -83,7 +83,7 @@ def predict(
         filtered_scores = []
         filtered_labels = []
 
-        for ind, detection in filtered_data.iterrows():
+        for _, detection in filtered_data.iterrows():
             box = np.asarray([detection['x1'], detection['y1'], detection['x2'], detection['y2']])
             filtered_boxes.append(box)
             filtered_scores.append(detection['confidence'])
@@ -108,7 +108,7 @@ def predict(
         print('{}/{}'.format(i + 1, generator.size()), end='\r')
 
     # Save annotations csv file
-    with open(res_file, 'wb') as fl_csv:
+    with open(res_file, 'w') as fl_csv:
         writer = csv.writer(fl_csv)
         writer.writerows(csv_data_lst)
     print("Saved output.csv file")

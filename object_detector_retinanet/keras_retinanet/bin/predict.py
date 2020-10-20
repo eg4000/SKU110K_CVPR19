@@ -21,7 +21,6 @@ import os
 import sys
 
 import keras
-import numpy
 import tensorflow as tf
 
 
