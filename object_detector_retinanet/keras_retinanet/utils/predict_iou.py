@@ -43,7 +43,7 @@ def predict(
     result_dir = os.path.join(root_dir(), 'results')
     create_folder(result_dir)
     timestamp = datetime.datetime.utcnow()
-    res_file = result_dir + '/detections_output_iou_{}_{}.csv'.format(hard_score_rate, timestamp)
+    res_file = result_dir + '/detections_output_iou_{}.csv'.format(hard_score_rate)
     for i in range(generator.size()):
         image_name = os.path.join(generator.image_path(i).split(os.path.sep)[-2],
                                   generator.image_path(i).split(os.path.sep)[-1])
