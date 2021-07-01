@@ -370,6 +370,7 @@ def merge_detections(image_name, results):
     result_df['y2'] = results[:, 3].astype(int)
     result_df['confidence'] = results[:, 4]
     result_df['hard_score'] = results[:, 5]
+    result_df['classification'] = results[:, 6]
     result_df['uuid'] = 'object_label'
     result_df['label_type'] = 'object_label'
 #    result_df['project'] = project
