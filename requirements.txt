@@ -1,7 +1,8 @@
-Keras==2.4.3
-keras-retinanet
+keras==2.4.3
+keras_resnet
 tensorflow==2.4.0
 numpy==1.19.5
 opencv-python==4.5.1
+opencv-contrib-python==4.5.1
 tqdm
 pandas
