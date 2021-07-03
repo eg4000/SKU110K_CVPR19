@@ -14,11 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import keras
+import tensorflow as tf
+import tensorflow.keras as keras
 import numpy
 
 from .. import backend
-
 
 def filter_detections(boxes, classification, other=[], nms=True, score_threshold=0.05, max_detections=300, nms_threshold=0.5):
     """ Filter detections using the boxes and classification values.
@@ -60,9 +60,11 @@ def filter_detections(boxes, classification, other=[], nms=True, score_threshold
             indices = keras.backend.gather(indices, nms_indices)
 
         # add indices to list of all indices
-        labels  = c * keras.backend.ones((keras.backend.shape(indices)[0],), dtype='int64')
+        init_shape = (keras.backend.shape(indices)[0],)
+        labels  = c * tf.ones(init_shape, dtype='int64')
         indices = keras.backend.stack([indices[:, 0], labels], axis=1)
         all_indices.append(indices)
+    
 
     # concatenate indices to single tensor
     indices = keras.backend.concatenate(all_indices, axis=0)

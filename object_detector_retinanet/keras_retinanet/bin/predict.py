@@ -20,7 +20,7 @@ import argparse
 import os
 import sys
 
-import keras
+import tensorflow.keras as keras
 import tensorflow as tf
 
 
@@ -34,9 +34,9 @@ from object_detector_retinanet.utils import image_path, annotation_path, root_di
 def get_session():
     """ Construct a modified tf session.
     """
-    config = tf.ConfigProto()
+    config = tf.compat.v1.ConfigProto()
     config.gpu_options.allow_growth = True
-    return tf.Session(config=config)
+    return tf.compat.v1.Session(config=config)
 
 
 def create_generator(args):
@@ -127,7 +127,7 @@ def main(args=None):
         os.environ["CUDA_VISIBLE_DEVICES"] = str(666)
     else:
         os.environ["CUDA_VISIBLE_DEVICES"] = gpu_num
-    keras.backend.tensorflow_backend.set_session(get_session())
+    tf.compat.v1.keras.backend.set_session(get_session())
 
     # make save path if it doesn't exist
     if args.save_path is not None and not os.path.exists(args.save_path):

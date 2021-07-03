@@ -64,6 +64,8 @@ class DuplicateMerger(object):
         cv2.normalize(heat_map, heat_map, 0, 255, cv2.NORM_MINMAX)
         heat_map = cv2.convertScaleAbs(heat_map)
         h2, heat_map = cv2.threshold(heat_map, 4, 255, cv2.THRESH_TOZERO)
+        # cv2.imshow("Heat map", heat_map)
+        # cv2.waitKey()
         contours = cv2.findContours(numpy.ndarray.copy(heat_map), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
         candidates = self.find_new_candidates(contours, heat_map, data, original_detection_centers, image)
@@ -75,13 +77,12 @@ class DuplicateMerger(object):
         filtered_data = pandas.DataFrame(columns=data.columns)
         for i, candidate in candidates.items():
             label = candidate['original_detection_ids']
-            original_detections = data.ix[label]
-            original_detections[
-                'avg_score'] = 0.5 * original_detections.confidence + 0.5 * original_detections.hard_score
+            original_detections = data.iloc[label]
+            original_detections.insert(0, 'avg_score', 0.5 * original_detections.confidence + 0.5 * original_detections.hard_score, True)
             best_detection_id = original_detections.avg_score.argmax()
             # best_detection_id = original_detections.confidence.argmax()
             # best_detection_id = original_detections.hard_score.argmax()
-            best_detection = original_detections.ix[best_detection_id].copy()
+            best_detection = original_detections.iloc[best_detection_id].copy()
 
             # The following code creates the median bboxes
             # original_detections = original_detections[original_detections.confidence > 0.5]
@@ -110,7 +111,7 @@ class DuplicateMerger(object):
 
     def find_new_candidates(self, contours, heat_map, data, original_detection_centers, image):
         candidates = []
-        for contour_i, contour in enumerate(contours[1]):
+        for contour_i, contour in enumerate(contours[0]):
             contour_bounding_rect = cv2.boundingRect(contour)
 
             contour_bbox = extract_boxes_from_edge_boxes(numpy.array(contour_bounding_rect))[0]
@@ -200,8 +201,9 @@ class DuplicateMerger(object):
             ellipse_mask = cv2.fillPoly(local_m, [poly], (1, 1, 1))
             contours = cv2.findContours(ellipse_mask.copy(), cv2.RETR_EXTERNAL,
                                         cv2.CHAIN_APPROX_SIMPLE)
-            cnts.append(contours[1][0])
+            cnts.append(contours[0][0])
         center_points = mu.copy()
+
         distances = scipy.spatial.distance.cdist(center_points, center_points)
         scaled_distances = numpy.ndarray(shape=[k, k], dtype=numpy.float64)
         for i in range(0, k):
@@ -368,6 +370,7 @@ def merge_detections(image_name, results):
     result_df['y2'] = results[:, 3].astype(int)
     result_df['confidence'] = results[:, 4]
     result_df['hard_score'] = results[:, 5]
+    result_df['classification'] = results[:, 6]
     result_df['uuid'] = 'object_label'
     result_df['label_type'] = 'object_label'
 #    result_df['project'] = project

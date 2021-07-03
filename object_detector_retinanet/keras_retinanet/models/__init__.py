@@ -71,9 +71,9 @@ def load_model(filepath, backbone_name='resnet50', convert=False, nms=False):
         ImportError: if h5py is not available.
         ValueError: In case of an invalid savefile.
     """
-    import keras.models
+    import tensorflow.keras.models
 
-    model = keras.models.load_model(filepath, custom_objects=backbone(backbone_name).custom_objects)
+    model = tensorflow.keras.models.load_model(filepath, custom_objects=backbone(backbone_name).custom_objects)
     if convert:
         from object_detector_retinanet.keras_retinanet.models.retinanet import retinanet_bbox
         model = retinanet_bbox(model=model, nms=nms)

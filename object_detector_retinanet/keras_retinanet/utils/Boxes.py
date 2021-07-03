@@ -145,7 +145,7 @@ def perform_nms_on_image_dataframe(image_data, overlap_threshold=0.5):
     number_of_images = len(image_data['image_name'].unique())
     if number_of_images > 1:
         print('nms received data including more than 1 image - cannot perform nms!')
-    image_boxes = image_data.as_matrix(BOX_CONSTANTS)
+    image_boxes = image_data.to_numpy()
     image_scores = numpy.array(image_data['confidence'])
 
     nms_boxes, nms_scores, deleted_indices = non_maximal_suppression(image_boxes, image_scores,
