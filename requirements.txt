@@ -1,6 +1,6 @@
 Keras==2.2.5
 keras-retinanet==0.5.1
-tensorflow-gpu==1.15.4
+tensorflow-gpu==2.7.2
 numpy==1.19.2
 opencv-python==3.1.0.5
 tqdm==4.50.2
